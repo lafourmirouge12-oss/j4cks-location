@@ -159,10 +159,13 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="nav-section">Administration</div>
     <div class="nav-item" onclick="goPage('config',this)"><span>⚙️</span> Configuration</div>
     <div class="nav-item" onclick="goPage('export',this)"><span>📦</span> Export / Backup</div>
+    <div class="nav-section">Documents</div>
+    <div class="nav-item" onclick="goPage('generateur',this)"><span>📝</span> Générateur Contrats</div>
     <div class="nav-section">IA</div>
     <div class="nav-item" onclick="goPage('ai',this)"><span>🤖</span> Assistant IA</div>
   </nav>
   <div class="sidebar-footer">
+    <a href="/" target="_blank" style="display:block;width:100%;font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.1em;color:#fff;border:1px solid rgba(255,140,0,0.5);background:rgba(255,140,0,0.1);padding:0.5rem;cursor:pointer;transition:all 0.2s;text-transform:uppercase;text-align:center;text-decoration:none;margin-bottom:0.5rem;" onmouseover="this.style.background='rgba(255,140,0,0.22)'" onmouseout="this.style.background='rgba(255,140,0,0.1)'">🌐 Voir le site</a>
     <button class="logout-btn" onclick="doLogout()">// Déconnexion</button>
   </div>
 </aside>
@@ -315,6 +318,72 @@ tr:hover td{background:rgba(255,255,255,0.02);}
           <div id="full-stats" style="font-family:'Orbitron',monospace;font-size:0.7rem;line-height:2;color:#ccc;">Chargement...</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- GÉNÉRATEUR DE CONTRATS IA -->
+  <div class="page" id="page-generateur">
+    <div class="page-header">
+      <div><div class="page-tag">// SUPER ADMIN — DOCUMENTS</div><div class="page-title">Générateur de Contrats IA</div></div>
+    </div>
+    <!-- TYPE CARDS -->
+    <div class="grid-2" style="margin-bottom:1.2rem;">
+      <div onclick="openGenForm('location')" style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">📋</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">Contrat de Location</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Contrat complet avec toutes les clauses légales, caution, conditions d'utilisation.</div>
+      </div>
+      <div onclick="openGenForm('caution')" style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">💰</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">Document de Caution</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Dépôt de garantie légal, montant, conditions de restitution.</div>
+      </div>
+      <div onclick="openGenForm('etatLieux')" style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">🔍</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">État des Lieux</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Formulaire détaillé de l'état du véhicule à l'entrée et à la sortie.</div>
+      </div>
+      <div onclick="openGenForm('facture')" style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">🧾</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">Facture</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Facture professionnelle conforme, avec TVA, pour le client.</div>
+      </div>
+    </div>
+    <!-- FORM AREA -->
+    <div id="gen-form-area" style="display:none;margin-bottom:1.2rem;">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title" id="gen-form-title">// GÉNÉRER UN CONTRAT</div>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('gen-form-area').style.display='none'">Fermer</button>
+        </div>
+        <div class="panel-body">
+          <div class="grid-2" id="gen-form-fields"></div>
+          <div style="margin-top:1rem;display:flex;gap:0.8rem;flex-wrap:wrap;">
+            <button class="btn btn-orange" onclick="generateContractSA()">⚡ Générer avec l'IA →</button>
+            <button class="btn btn-outline" onclick="document.getElementById('gen-form-area').style.display='none'">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- OUTPUT -->
+    <div id="gen-output-wrap" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <div style="font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.28em;color:var(--orange);">// DOCUMENT GÉNÉRÉ</div>
+          <div style="display:flex;gap:0.6rem;">
+            <button class="btn btn-outline btn-sm" onclick="copyText('gen-output')">📋 Copier</button>
+            <button class="btn btn-green btn-sm" onclick="printDesignedDoc()">🖨️ Imprimer</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="gen-output" style="background:var(--black2);border:1px solid rgba(255,140,0,0.15);overflow-y:auto;max-height:620px;"></div>
+        </div>
+      </div>
+    </div>
+    <!-- SAVED CONTRACTS -->
+    <div style="margin-top:1.5rem;">
+      <div style="font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.28em;color:var(--orange);margin-bottom:0.8rem;">// CONTRATS SAUVEGARDÉS</div>
+      <div class="table-wrap"><table><thead><tr><th>Type</th><th>Date</th><th>Actions</th></tr></thead><tbody id="gen-c-list"></tbody></table></div>
     </div>
   </div>
 
@@ -525,6 +594,251 @@ function addMsg(text,role){
 function copyText(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('Copié !','success'));}
 function printEl(id){const w=window.open('','_blank');w.document.write('<pre style="font-family:Arial;font-size:12px;padding:2rem;white-space:pre-wrap;">'+document.getElementById(id).textContent+'</pre>');w.print();}
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',4000);}
+
+// ═══════════════════════════════════════════════
+// GÉNÉRATEUR DE CONTRATS — DESIGN COMPLET
+// ═══════════════════════════════════════════════
+
+const SA_CONTRACT_FORMS = {
+  location: [
+    {id:'cl-nom',label:'Nom complet client',ph:'Martin Thomas'},
+    {id:'cl-email',label:'Email client',ph:'client@email.com'},
+    {id:'cl-tel',label:'Téléphone',ph:'+33 6 00 00 00 00'},
+    {id:'cl-addr',label:'Adresse client',ph:'12 rue de la Paix, Mulhouse'},
+    {id:'cl-permis',label:'N° permis de conduire',ph:'12AB34567'},
+    {id:'cl-ddn',label:'Date de naissance',ph:'01/01/1990'},
+    {id:'cl-vehicule',label:'Véhicule',ph:'Clio 5 Alpine — Bleu Iron'},
+    {id:'cl-immat',label:'Immatriculation',ph:'XX-000-XX'},
+    {id:'cl-debut',label:'Date de début',ph:'2026-06-10'},
+    {id:'cl-fin',label:'Date de fin',ph:'2026-06-13'},
+    {id:'cl-prix',label:'Prix total (€)',ph:'237'},
+    {id:'cl-caution',label:'Caution (€)',ph:'800'},
+    {id:'cl-km',label:'Km inclus / jour',ph:'200'},
+  ],
+  caution: [
+    {id:'ca-nom',label:'Nom complet client',ph:'Martin Thomas'},
+    {id:'ca-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},
+    {id:'ca-montant',label:'Montant caution (€)',ph:'800'},
+    {id:'ca-date',label:'Date',ph:'2026-06-10'},
+    {id:'ca-moyen',label:'Moyen de paiement',ph:'CB / Espèces / Chèque'},
+  ],
+  etatLieux: [
+    {id:'el-vehicule',label:'Véhicule',ph:'Clio 5 Alpine — Bleu Iron'},
+    {id:'el-immat',label:'Immatriculation',ph:'XX-000-XX'},
+    {id:'el-km',label:'Kilométrage actuel',ph:'15 420 km'},
+    {id:'el-client',label:'Nom client',ph:'Martin Thomas'},
+    {id:'el-date',label:'Date état des lieux',ph:'2026-06-10'},
+    {id:'el-carburant',label:'Niveau carburant',ph:'Plein / 3/4 / 1/2 / 1/4'},
+    {id:'el-notes',label:'Observations générales',ph:'RAS / Rayure côté conducteur...'},
+  ],
+  facture: [
+    {id:'fa-num',label:'N° Facture',ph:'FAC-2026-001'},
+    {id:'fa-nom',label:'Nom client',ph:'Martin Thomas'},
+    {id:'fa-addr',label:'Adresse client',ph:'12 rue de la Paix, Mulhouse'},
+    {id:'fa-vehicule',label:'Véhicule',ph:'Clio 5 Alpine — Bleu Iron'},
+    {id:'fa-debut',label:'Date début location',ph:'2026-06-10'},
+    {id:'fa-fin',label:'Date fin location',ph:'2026-06-13'},
+    {id:'fa-jours',label:'Nombre de jours',ph:'3'},
+    {id:'fa-prix-j',label:'Prix / jour (€)',ph:'79'},
+    {id:'fa-tva',label:'TVA (%)',ph:'20'},
+  ]
+};
+
+let currentSAContractType = null;
+
+function openGenForm(type) {
+  currentSAContractType = type;
+  const titles = {location:'Contrat de Location',caution:'Document de Caution',etatLieux:'État des Lieux',facture:'Facture'};
+  document.getElementById('gen-form-title').textContent = '// GÉNÉRER : ' + titles[type].toUpperCase();
+  const fields = SA_CONTRACT_FORMS[type] || [];
+  document.getElementById('gen-form-fields').innerHTML = fields.map(f =>
+    `<div class="f-group"><label class="f-label">${f.label}</label><input class="f-input" id="${f.id}" placeholder="${f.ph}"></div>`
+  ).join('');
+  document.getElementById('gen-form-area').style.display = 'block';
+  document.getElementById('gen-output-wrap').style.display = 'none';
+  document.getElementById('gen-form-area').scrollIntoView({behavior:'smooth'});
+}
+
+async function generateContractSA() {
+  const type = currentSAContractType;
+  const fields = SA_CONTRACT_FORMS[type] || [];
+  const data = {agence:"J4CK'S Location — Mulhouse, Alsace, France"};
+  fields.forEach(f => { data[f.label] = document.getElementById(f.id)?.value || ''; });
+
+  document.getElementById('gen-output-wrap').style.display = 'block';
+  document.getElementById('gen-output').innerHTML = `
+    <div style="text-align:center;padding:2rem;color:var(--orange);font-family:'Orbitron',monospace;font-size:0.72rem;letter-spacing:0.2em;">
+      <div style="margin-bottom:0.8rem;">⚡ GÉNÉRATION EN COURS</div>
+      <div style="opacity:0.5;font-size:0.6rem;">L'IA rédige votre document...</div>
+    </div>`;
+  document.getElementById('gen-output-wrap').scrollIntoView({behavior:'smooth'});
+
+  const prompts = {
+    location: `Génère un contrat de location de véhicule complet et professionnel en français pour J4CK'S Location (agence de location à Mulhouse, France). Données: ${JSON.stringify(data)}. Inclus toutes les sections légales : identité des parties, description véhicule, période de location, tarifs, caution, kilométrage inclus, conditions d'utilisation, interdictions, assurance, état des lieux, responsabilités, pénalités, résiliation, signatures. Formate en sections numérotées claires. Ne mets PAS de balises markdown, juste du texte structuré.`,
+    caution: `Génère un document de dépôt de garantie / caution professionnel et légal en français pour J4CK'S Location à Mulhouse. Données: ${JSON.stringify(data)}. Inclus : parties, montant, conditions de restitution, délais, signature. Texte clair et structuré, pas de markdown.`,
+    etatLieux: `Génère un formulaire d'état des lieux de véhicule complet en français pour J4CK'S Location à Mulhouse. Données: ${JSON.stringify(data)}. Inclus toutes les zones du véhicule (extérieur : capot, ailes, portes, pare-chocs, vitres, rétros, jantes / intérieur : tableau de bord, sièges, moquette, plafond / accessoires : cric, triangle, carte grise, clés), niveau carburant, observations. Format tabulaire textuel lisible, pas de markdown.`,
+    facture: `Génère une facture professionnelle complète et conforme au droit français pour J4CK'S Location à Mulhouse (SIRET: 000 000 000 00000). Données: ${JSON.stringify(data)}. Calcule HT, TVA et TTC. Inclus toutes les mentions légales obligatoires d'une facture française. Texte structuré propre, pas de markdown.`
+  };
+
+  try {
+    const r = await fetch('/api/generate-contract', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({type, data})
+    });
+    const d = await r.json();
+    const text = d.content || d.error || 'Erreur de génération.';
+    renderDesignedDocument(type, data, text);
+    loadSAContracts();
+    toast('Document généré avec succès !', 'success');
+  } catch(e) {
+    document.getElementById('gen-output').innerHTML = '<div style="color:var(--red);padding:1rem;">Erreur de connexion au serveur.</div>';
+    toast('Erreur lors de la génération', 'error');
+  }
+}
+
+function renderDesignedDocument(type, data, content) {
+  const typeLabels = {location:'CONTRAT DE LOCATION',caution:'DOCUMENT DE CAUTION',etatLieux:"ÉTAT DES LIEUX",facture:'FACTURE'};
+  const docNum = 'J4-' + Date.now().toString().slice(-6);
+  const now = new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+
+  // Formater le contenu : découper en sections si possible
+  const lines = content.split('\n').filter(l => l.trim());
+  let formattedContent = '';
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    // Ligne de titre de section (commence par chiffre + point ou par majuscules dominantes)
+    if (/^[0-9]+[\.)\-]/.test(trimmed) || /^[A-ZÀÉÈÊÎÔÙ\s]{8,}$/.test(trimmed)) {
+      formattedContent += `<div style="font-weight:700;color:#1a1a1a;font-size:0.85rem;margin:1.2rem 0 0.4rem;padding-bottom:0.3rem;border-bottom:2px solid #e00020;letter-spacing:0.05em;">${trimmed}</div>`;
+    } else if (trimmed === '') {
+      formattedContent += '<div style="height:0.4rem;"></div>';
+    } else {
+      formattedContent += `<div style="margin-bottom:0.3rem;line-height:1.65;color:#222;">${trimmed}</div>`;
+    }
+  });
+
+  const html = `
+<div id="designed-doc" style="font-family:'Georgia',serif;background:#fff;color:#111;padding:0;max-width:800px;margin:0 auto;box-shadow:0 4px 40px rgba(0,0,0,0.3);">
+
+  <!-- EN-TÊTE -->
+  <div style="background:#050505;padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:1.6rem;color:#fff;letter-spacing:0.08em;line-height:1;">
+        <span style="color:#e00020;">J4</span>CK'S<span style="color:#e00020;font-size:0.6em;vertical-align:super;"> ·</span>LOCATION
+      </div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.52rem;letter-spacing:0.45em;color:#666;margin-top:0.3rem;">AGENCE DE LOCATION PREMIUM — MULHOUSE</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.3em;color:#e00020;margin-bottom:0.3rem;">${typeLabels[type]||'DOCUMENT'}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.75rem;color:#fff;font-weight:700;">N° ${docNum}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.52rem;color:#555;margin-top:0.2rem;">${now}</div>
+    </div>
+  </div>
+
+  <!-- BANDE ROUGE -->
+  <div style="height:4px;background:linear-gradient(90deg,#e00020,#ff4060,#e00020);"></div>
+
+  <!-- SOUS-HEADER INFO AGENCE -->
+  <div style="background:#111;padding:0.75rem 2.5rem;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Orbitron',monospace;font-size:0.52rem;color:#555;letter-spacing:0.2em;">contact@j4cks.fr · +33 6 00 00 00 00 · Mulhouse, Alsace, France</div>
+    <div style="font-family:'Orbitron',monospace;font-size:0.52rem;color:#555;letter-spacing:0.15em;">SIRET : 000 000 000 00000</div>
+  </div>
+
+  <!-- CORPS DU DOCUMENT -->
+  <div style="padding:2.5rem;background:#fafafa;font-size:0.88rem;line-height:1.6;">
+    ${formattedContent}
+  </div>
+
+  <!-- ZONES DE SIGNATURE -->
+  <div style="padding:1.5rem 2.5rem;background:#f0f0f0;border-top:1px solid #ddd;">
+    <div style="font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.3em;color:#e00020;margin-bottom:1.2rem;">SIGNATURES</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;">
+      <div>
+        <div style="font-size:0.78rem;font-weight:700;margin-bottom:0.3rem;color:#333;">Le Loueur</div>
+        <div style="font-size:0.72rem;color:#777;margin-bottom:1.2rem;">J4CK'S Location — Mulhouse</div>
+        <div style="border-bottom:1px solid #999;height:40px;"></div>
+        <div style="font-size:0.65rem;color:#999;margin-top:0.3rem;">Signature et cachet</div>
+      </div>
+      <div>
+        <div style="font-size:0.78rem;font-weight:700;margin-bottom:0.3rem;color:#333;">Le Locataire</div>
+        <div style="font-size:0.72rem;color:#777;margin-bottom:1.2rem;">Lu et approuvé, bon pour accord</div>
+        <div style="border-bottom:1px solid #999;height:40px;"></div>
+        <div style="font-size:0.65rem;color:#999;margin-top:0.3rem;">Signature du client</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIED DE PAGE -->
+  <div style="background:#050505;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Orbitron',monospace;font-size:0.48rem;color:#444;letter-spacing:0.2em;">© J4CK'S LOCATION — TOUS DROITS RÉSERVÉS</div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <div style="width:16px;height:2px;background:#e00020;"></div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.48rem;color:#444;letter-spacing:0.15em;">Document N° ${docNum}</div>
+    </div>
+  </div>
+</div>`;
+
+  document.getElementById('gen-output').innerHTML = html;
+}
+
+function printDesignedDoc() {
+  const content = document.getElementById('designed-doc');
+  if (!content) { printEl('gen-output'); return; }
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fff;}</style>
+    </head><body>${content.outerHTML}</body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 800);
+}
+
+async function loadSAContracts() {
+  try {
+    const c = await(await fetch('/api/contracts')).json();
+    const el = document.getElementById('gen-c-list');
+    if (!el) return;
+    el.innerHTML = c.length
+      ? c.map(x => `<tr>
+          <td><strong>${x.type||'location'}</strong></td>
+          <td>${x.createdAt ? new Date(x.createdAt).toLocaleString('fr-FR') : '—'}</td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-outline btn-sm" onclick="viewSAContract(${JSON.stringify(x.content||'').replace(/"/g,'&quot;')}, '${x.type||'location'}')">Voir</button>
+            <button class="btn btn-red btn-sm" onclick="deleteSAContract('${x.id}')">🗑</button>
+          </td>
+        </tr>`).join('')
+      : '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:1.5rem;">Aucun contrat généré</td></tr>';
+  } catch(e) {}
+}
+
+function viewSAContract(content, type) {
+  document.getElementById('gen-output-wrap').style.display = 'block';
+  renderDesignedDocument(type || 'location', {}, content);
+  document.getElementById('gen-output-wrap').scrollIntoView({behavior:'smooth'});
+}
+
+async function deleteSAContract(id) {
+  if (!confirm('Supprimer ce contrat ?')) return;
+  await fetch('/api/contracts/' + id, {method:'DELETE'});
+  loadSAContracts();
+  toast('Contrat supprimé', 'success');
+}
+
+// Patch goPage pour charger les contrats SA
+const _origGoPage = goPage;
+goPage = function(p, el) {
+  _origGoPage(p, el);
+  if (p === 'generateur') loadSAContracts();
+};
+
+// Patch printEl du générateur SA pour utiliser le design
+const _origPrintGen = printEl;
+document.addEventListener('click', e => {
+  if (e.target.closest('#gen-output-wrap') && e.target.textContent.includes('Imprimer')) {
+    e.preventDefault(); e.stopPropagation();
+    printDesignedDoc();
+  }
+}, true);
 
 checkSession();
 </script>

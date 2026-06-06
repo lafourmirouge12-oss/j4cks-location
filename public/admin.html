@@ -131,7 +131,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .ct-icon{font-size:1.6rem;margin-bottom:0.6rem;}
 .ct-name{font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;}
 .ct-desc{font-size:0.78rem;color:var(--muted);line-height:1.4;}
-.contract-output{background:var(--black2);border:1px solid var(--border);padding:1.2rem;min-height:250px;font-family:'Rajdhani',sans-serif;font-size:0.88rem;line-height:1.7;color:var(--text);white-space:pre-wrap;max-height:480px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.contract-output{background:var(--black2);border:1px solid var(--border);padding:0;min-height:250px;font-family:'Rajdhani',sans-serif;font-size:0.88rem;line-height:1.7;color:var(--text);overflow-y:auto;max-height:600px;}
 .generating{display:flex;align-items:center;gap:0.8rem;color:var(--muted);font-family:'Orbitron',monospace;font-size:0.68rem;letter-spacing:0.15em;}
 .dot-anim span{animation:blink 1.2s ease-in-out infinite;}
 .dot-anim span:nth-child(2){animation-delay:0.2s;}
@@ -205,6 +205,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="nav-item" onclick="goPage('ai',this)"><span>🤖</span> Assistant IA</div>
   </nav>
   <div class="sidebar-footer">
+    <a href="/" target="_blank" style="display:block;width:100%;font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.12em;color:#fff;border:1px solid rgba(224,0,32,0.5);background:rgba(224,0,32,0.12);padding:0.5rem;cursor:pointer;transition:all 0.2s;text-transform:uppercase;text-align:center;text-decoration:none;margin-bottom:0.5rem;" onmouseover="this.style.background='rgba(224,0,32,0.25)'" onmouseout="this.style.background='rgba(224,0,32,0.12)'">🌐 Voir le site</a>
     <button class="logout-btn" onclick="doLogout()">// Déconnexion</button>
   </div>
 </aside>
@@ -480,27 +481,94 @@ async function generateContract(){
   fields.forEach(f=>{data[f.label]=document.getElementById(f.id)?.value||'';});
   data.agence="J4CK'S Location, Mulhouse, France";
   document.getElementById('contract-output-wrap').style.display='block';
-  document.getElementById('contract-output').innerHTML='<div class="generating">// Génération en cours <span class="dot-anim"><span>.</span><span>.</span><span>.</span></span></div>';
+  document.getElementById('contract-output').innerHTML=`
+    <div style="text-align:center;padding:2rem;color:var(--red);font-family:'Orbitron',monospace;font-size:0.72rem;letter-spacing:0.2em;">
+      <div style="margin-bottom:0.8rem;">⚡ GÉNÉRATION EN COURS</div>
+      <div class="dot-anim" style="opacity:0.5;font-size:0.6rem;">L'IA rédige votre document<span>.</span><span>.</span><span>.</span></div>
+    </div>`;
   try{
     const r=await fetch('/api/generate-contract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:currentContractType,data})});
     const d=await r.json();
-    document.getElementById('contract-output').textContent=d.content||d.error||'Erreur';
-    loadContracts();toast('Contrat généré !','success');
+    const text=d.content||d.error||'Erreur';
+    document.getElementById('contract-output').innerHTML=renderAdminDocument(currentContractType,data,text);
+    loadContracts();toast('Document généré !','success');
   }catch(e){
-    document.getElementById('contract-output').textContent='Erreur de connexion.';
+    document.getElementById('contract-output').innerHTML='<div style="color:var(--red);padding:1rem;">Erreur de connexion.</div>';
     toast('Erreur lors de la génération','error');
   }
 }
 
-function copyContract(){navigator.clipboard.writeText(document.getElementById('contract-output').textContent).then(()=>toast('Copié !','success'));}
-function printContract(){const w=window.open('','_blank');w.document.write('<pre style="font-family:Arial;font-size:12px;padding:2rem;white-space:pre-wrap;">'+document.getElementById('contract-output').textContent+'</pre>');w.print();}
+function copyContract(){navigator.clipboard.writeText(document.getElementById('contract-output').innerText).then(()=>toast('Copié !','success'));}
+
+function printContract(){
+  const doc = document.getElementById('designed-contract-doc');
+  if(doc){
+    const w=window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+      <style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fff;}</style>
+      </head><body>${doc.outerHTML}</body></html>`);
+    w.document.close();
+    setTimeout(()=>w.print(),800);
+  } else {
+    const w=window.open('','_blank');
+    w.document.write('<pre style="font-family:Arial;font-size:12px;padding:2rem;white-space:pre-wrap;">'+document.getElementById('contract-output').innerText+'</pre>');
+    w.print();
+  }
+}
+
+function renderAdminDocument(type, data, content) {
+  const typeLabels={location:'CONTRAT DE LOCATION',caution:'DOCUMENT DE CAUTION',etatLieux:"ÉTAT DES LIEUX",facture:'FACTURE'};
+  const docNum='J4-'+Date.now().toString().slice(-6);
+  const now=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const lines=content.split('\n').filter(l=>l.trim());
+  let formatted='';
+  lines.forEach(line=>{
+    const t=line.trim();
+    if(/^[0-9]+[\.)\-]/.test(t)||/^[A-ZÀÉÈÊÎÔÙ\s]{8,}$/.test(t)){
+      formatted+=`<div style="font-weight:700;color:#1a1a1a;font-size:0.85rem;margin:1.2rem 0 0.4rem;padding-bottom:0.3rem;border-bottom:2px solid #e00020;letter-spacing:0.05em;">${t}</div>`;
+    } else {
+      formatted+=`<div style="margin-bottom:0.3rem;line-height:1.65;color:#222;">${t}</div>`;
+    }
+  });
+  return `<div id="designed-contract-doc" style="font-family:'Georgia',serif;background:#fff;color:#111;max-width:800px;margin:0 auto;box-shadow:0 4px 40px rgba(0,0,0,0.4);">
+  <div style="background:#050505;padding:1.8rem 2.5rem;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:1.5rem;color:#fff;letter-spacing:0.08em;line-height:1;"><span style="color:#e00020;">J4</span>CK'S<span style="color:#e00020;"> ·</span>LOCATION</div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.4em;color:#555;margin-top:0.3rem;">AGENCE DE LOCATION PREMIUM — MULHOUSE</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.25em;color:#e00020;margin-bottom:0.3rem;">${typeLabels[type]||'DOCUMENT'}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.72rem;color:#fff;font-weight:700;">N° ${docNum}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.5rem;color:#555;margin-top:0.2rem;">${now}</div>
+    </div>
+  </div>
+  <div style="height:4px;background:linear-gradient(90deg,#e00020,#ff4060,#e00020);"></div>
+  <div style="background:#111;padding:0.65rem 2.5rem;display:flex;justify-content:space-between;">
+    <div style="font-family:'Orbitron',monospace;font-size:0.48rem;color:#444;letter-spacing:0.18em;">contact@j4cks.fr · +33 6 00 00 00 00 · Mulhouse, Alsace</div>
+    <div style="font-family:'Orbitron',monospace;font-size:0.48rem;color:#444;letter-spacing:0.12em;">SIRET : 000 000 000 00000</div>
+  </div>
+  <div style="padding:2.5rem;background:#fafafa;font-size:0.88rem;line-height:1.6;">${formatted}</div>
+  <div style="padding:1.5rem 2.5rem;background:#f0f0f0;border-top:1px solid #ddd;">
+    <div style="font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.28em;color:#e00020;margin-bottom:1.2rem;">SIGNATURES</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;">
+      <div><div style="font-size:0.78rem;font-weight:700;color:#333;margin-bottom:0.3rem;">Le Loueur</div><div style="font-size:0.7rem;color:#777;margin-bottom:1.2rem;">J4CK'S Location — Mulhouse</div><div style="border-bottom:1px solid #999;height:40px;"></div><div style="font-size:0.62rem;color:#aaa;margin-top:0.3rem;">Signature et cachet</div></div>
+      <div><div style="font-size:0.78rem;font-weight:700;color:#333;margin-bottom:0.3rem;">Le Locataire</div><div style="font-size:0.7rem;color:#777;margin-bottom:1.2rem;">Lu et approuvé, bon pour accord</div><div style="border-bottom:1px solid #999;height:40px;"></div><div style="font-size:0.62rem;color:#aaa;margin-top:0.3rem;">Signature du client</div></div>
+    </div>
+  </div>
+  <div style="background:#050505;padding:0.85rem 2.5rem;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Orbitron',monospace;font-size:0.45rem;color:#333;letter-spacing:0.18em;">© J4CK'S LOCATION — TOUS DROITS RÉSERVÉS</div>
+    <div style="font-family:'Orbitron',monospace;font-size:0.45rem;color:#444;letter-spacing:0.12em;">N° ${docNum}</div>
+  </div>
+</div>`;
+}
 async function viewContract(id){
   try{
     const c=await(await fetch('/api/contracts')).json();
     const contract=c.find(x=>x.id===id);
     if(!contract)return;
     document.getElementById('contract-output-wrap').style.display='block';
-    document.getElementById('contract-output').textContent=contract.content;
+    document.getElementById('contract-output').innerHTML=renderAdminDocument(contract.type||'location',contract.data||{},contract.content||'');
     document.getElementById('contract-output').scrollIntoView({behavior:'smooth'});
   }catch(e){}
 }
