@@ -2,322 +2,529 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>J4CK'S — Super Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-:root{--red:#e00020;--red-glow:rgba(224,0,32,0.2);--black:#050505;--black2:#0d0d0d;--panel:#111;--border:rgba(224,0,32,0.2);--text:#f0f0f0;--muted:#666;--green:#00c850;--gold:#ffd700;}
+:root{--red:#e00020;--black:#050505;--black2:#0d0d0d;--panel:#111;--border:rgba(224,0,32,0.2);--text:#f0f0f0;--muted:#666;--green:#00c850;--orange:#ff8c00;--blue:#2196f3;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--black);color:var(--text);font-family:'Rajdhani',sans-serif;display:flex;height:100vh;overflow:hidden;}
-body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.008) 3px,rgba(255,255,255,0.008) 4px);pointer-events:none;z-index:9999;}
-#login-screen{position:fixed;inset:0;background:var(--black);z-index:1000;display:flex;align-items:center;justify-content:center;}
-.login-box{background:var(--panel);border:1px solid rgba(255,215,0,0.3);padding:3rem;width:380px;position:relative;}
-.login-box::before{content:'';position:absolute;top:-1px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),transparent);}
-.login-title{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:0.3rem;}
-.login-sub{font-size:0.8rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:2rem;}
-.l-label{display:block;font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.3em;color:var(--muted);margin-bottom:0.4rem;text-transform:uppercase;}
-.l-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,215,0,0.2);color:var(--text);padding:0.8rem 1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;margin-bottom:1rem;transition:border-color 0.2s;}
-.l-input:focus{border-color:var(--gold);}
-.l-btn{width:100%;font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#000;background:var(--gold);border:none;padding:0.9rem;cursor:pointer;transition:all 0.2s;}
-.l-btn:hover{background:#ffe94d;}
-.l-err{color:var(--red);font-size:0.8rem;margin-top:0.8rem;display:none;font-family:'Orbitron',monospace;}
-aside{width:240px;background:var(--black2);border-right:1px solid rgba(255,215,0,0.15);display:flex;flex-direction:column;flex-shrink:0;}
-.sidebar-logo{padding:1.5rem;border-bottom:1px solid rgba(255,215,0,0.15);}
-.sidebar-logo span{font-family:'Orbitron',monospace;font-weight:900;font-size:1rem;color:var(--gold);}
-.sidebar-role{font-size:0.65rem;letter-spacing:0.25em;color:var(--gold);margin-top:0.3rem;opacity:0.6;}
-nav.side-nav{flex:1;padding:1rem 0;}
-.nav-item{display:flex;align-items:center;gap:0.8rem;padding:0.75rem 1.5rem;cursor:pointer;transition:all 0.2s;color:var(--muted);font-size:0.85rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;border-left:2px solid transparent;}
-.nav-item:hover{color:#fff;background:rgba(255,215,0,0.04);}
-.nav-item.active{color:var(--gold);background:rgba(255,215,0,0.06);border-left-color:var(--gold);}
-.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,215,0,0.15);}
-.logout-btn{width:100%;font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--muted);border:1px solid rgba(255,255,255,0.1);background:transparent;padding:0.5rem;cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
-.logout-btn:hover{border-color:var(--red);color:var(--red);}
-main{flex:1;overflow-y:auto;background:var(--black);}
-.page{display:none;padding:2rem;animation:fadeIn 0.3s ease;}
+body{background:var(--black);color:var(--text);font-family:'Rajdhani',sans-serif;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.007) 3px,rgba(255,255,255,0.007) 4px);pointer-events:none;z-index:9999;}
+#login-screen{position:fixed;inset:0;background:var(--black);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.login-box{background:var(--panel);border:1px solid var(--border);padding:2.5rem;width:100%;max-width:380px;position:relative;}
+.login-box::before{content:'';position:absolute;top:-1px;left:0;right:0;height:3px;background:linear-gradient(90deg,#ff8c00,var(--red),transparent);}
+.login-title{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:#fff;margin-bottom:0.3rem;}
+.login-sub{font-size:0.75rem;color:var(--orange);letter-spacing:0.18em;margin-bottom:1.8rem;font-family:'Orbitron',monospace;}
+.l-label{display:block;font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.28em;color:var(--muted);margin-bottom:0.35rem;text-transform:uppercase;}
+.l-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.75rem 0.9rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;margin-bottom:1rem;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0;}
+.l-input:focus{border-color:var(--orange);}
+.l-btn{width:100%;font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#c00018,var(--orange));border:none;padding:0.85rem;cursor:pointer;transition:opacity 0.2s;}
+.l-btn:hover{opacity:0.85;}
+.l-err{color:var(--red);font-size:0.75rem;margin-top:0.8rem;display:none;font-family:'Orbitron',monospace;letter-spacing:0.1em;}
+.admin-layout{display:flex;min-height:100vh;}
+aside{width:230px;background:var(--black2);border-right:1px solid rgba(255,140,0,0.2);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform 0.3s;}
+.sidebar-logo{padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,140,0,0.2);}
+.sidebar-logo a{font-family:'Orbitron',monospace;font-weight:900;font-size:0.95rem;color:#fff;text-decoration:none;}
+.sidebar-logo a span{color:var(--orange);}
+.sidebar-role{font-size:0.58rem;letter-spacing:0.22em;color:var(--orange);margin-top:0.25rem;text-transform:uppercase;font-family:'Orbitron',monospace;}
+nav.side-nav{flex:1;padding:0.8rem 0;overflow-y:auto;}
+.nav-section{font-family:'Orbitron',monospace;font-size:0.48rem;letter-spacing:0.4em;color:var(--muted);padding:0.8rem 1.5rem 0.3rem;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 1.5rem;cursor:pointer;transition:all 0.2s;color:var(--muted);font-size:0.82rem;font-weight:600;letter-spacing:0.05em;border-left:2px solid transparent;}
+.nav-item:hover{color:#fff;background:rgba(255,140,0,0.05);}
+.nav-item.active{color:#fff;background:rgba(255,140,0,0.08);border-left-color:var(--orange);}
+.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,140,0,0.2);}
+.logout-btn{width:100%;font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.1em;color:var(--muted);border:1px solid rgba(255,255,255,0.1);background:transparent;padding:0.5rem;cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+.logout-btn:hover{border-color:var(--orange);color:var(--orange);}
+.mob-topbar{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--black2);border-bottom:1px solid rgba(255,140,0,0.25);z-index:60;align-items:center;justify-content:space-between;padding:0 1rem;}
+.mob-logo{font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:900;color:#fff;}
+.mob-logo span{color:var(--orange);}
+.mob-menu-btn{background:none;border:1px solid rgba(255,140,0,0.3);color:var(--text);padding:0.4rem 0.7rem;cursor:pointer;font-size:1rem;}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:45;}
+main{flex:1;margin-left:230px;background:var(--black);min-height:100vh;}
+.page{display:none;padding:1.5rem;animation:fadeIn 0.25s ease;}
 .page.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,215,0,0.15);}
-.page-title{font-family:'Orbitron',monospace;font-weight:900;font-size:1.5rem;color:var(--gold);}
-.page-tag{font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.4em;color:var(--gold);opacity:0.6;text-transform:uppercase;margin-bottom:0.3rem;}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
-.stat-card{background:var(--panel);border:1px solid rgba(255,215,0,0.15);padding:1.5rem;position:relative;}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
-.stat-card .s-num{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:var(--gold);display:block;}
-.stat-card .s-label{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-top:0.3rem;}
-.card{background:var(--panel);border:1px solid rgba(255,215,0,0.15);padding:1.5rem;margin-bottom:1.5rem;position:relative;}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
-.card-title{font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:var(--gold);margin-bottom:1.2rem;letter-spacing:0.1em;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.f-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.8rem;}
-.f-label{font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);}
-.f-input,.f-select{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.65rem 0.9rem;font-family:'Rajdhani',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.2s;width:100%;appearance:none;}
-.f-input:focus,.f-select:focus{border-color:var(--gold);}
-.btn{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.2rem;cursor:pointer;border:none;transition:all 0.2s;}
-.btn-gold{background:var(--gold);color:#000;}.btn-gold:hover{background:#ffe94d;}
-.btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:#ff0025;}
-.btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted);}.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
-.table-wrap{background:var(--panel);border:1px solid rgba(255,215,0,0.15);overflow:hidden;margin-top:1rem;}
-table{width:100%;border-collapse:collapse;}
-th{font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);padding:1rem 1.2rem;text-align:left;background:rgba(255,215,0,0.04);border-bottom:1px solid rgba(255,215,0,0.1);}
-td{padding:0.85rem 1.2rem;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.04);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,140,0,0.2);flex-wrap:wrap;gap:0.8rem;}
+.page-title{font-family:'Orbitron',monospace;font-weight:900;font-size:1.3rem;color:#fff;}
+.page-tag{font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.38em;color:var(--orange);text-transform:uppercase;margin-bottom:0.25rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--panel);border:1px solid var(--border);padding:1.2rem;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.red::before{background:var(--red);}
+.stat-card.orange::before{background:var(--orange);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.blue::before{background:var(--blue);}
+.stat-card .s-num{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;display:block;}
+.stat-card.red .s-num{color:var(--red);}
+.stat-card.orange .s-num{color:var(--orange);}
+.stat-card.green .s-num{color:var(--green);}
+.stat-card.blue .s-num{color:var(--blue);}
+.stat-card .s-label{font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-top:0.25rem;}
+.panel{background:var(--panel);border:1px solid var(--border);margin-bottom:1.2rem;}
+.panel-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+.panel-title{font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;color:#fff;letter-spacing:0.08em;}
+.panel-body{padding:1.2rem 1.5rem;}
+.table-wrap{background:var(--panel);border:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:400px;}
+th{font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--orange);padding:0.85rem 1rem;text-align:left;background:rgba(255,140,0,0.05);border-bottom:1px solid rgba(255,140,0,0.15);white-space:nowrap;}
+td{padding:0.75rem 1rem;font-size:0.88rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
-.badge-gold{display:inline-block;font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.15em;padding:0.25rem 0.6rem;background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);}
-.log-entry{padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.85rem;display:flex;gap:1rem;align-items:flex-start;}
-.log-time{color:var(--muted);font-family:'Orbitron',monospace;font-size:0.6rem;flex-shrink:0;margin-top:0.1rem;}
-.log-msg{color:var(--text);}
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--panel);border:1px solid rgba(255,215,0,0.3);padding:1rem 1.5rem;font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.1em;z-index:9998;transform:translateY(100px);opacity:0;transition:all 0.3s;color:var(--gold);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{display:inline-block;font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.1em;padding:0.22rem 0.55rem;text-transform:uppercase;}
+.badge.pending{background:rgba(255,140,0,0.15);color:var(--orange);border:1px solid rgba(255,140,0,0.3);}
+.badge.confirmed{background:rgba(0,200,80,0.15);color:var(--green);border:1px solid rgba(0,200,80,0.3);}
+.badge.cancelled{background:rgba(224,0,32,0.15);color:var(--red);border:1px solid rgba(224,0,32,0.3);}
+.badge.available{background:rgba(0,200,80,0.15);color:var(--green);border:1px solid rgba(0,200,80,0.3);}
+.badge.unavailable{background:rgba(255,140,0,0.15);color:var(--orange);border:1px solid rgba(255,140,0,0.3);}
+.btn{font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.45rem 0.9rem;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-orange{background:var(--orange);color:#fff;}.btn-orange:hover{background:#e07800;}
+.btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:#c00018;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}.btn-outline:hover{border-color:var(--orange);color:var(--orange);}
+.btn-green{background:rgba(0,200,80,0.12);border:1px solid rgba(0,200,80,0.3);color:var(--green);}.btn-green:hover{background:rgba(0,200,80,0.22);}
+.btn-sm{padding:0.28rem 0.55rem;font-size:0.5rem;}
+.f-group{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.8rem;}
+.f-label{font-family:'Orbitron',monospace;font-size:0.52rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--muted);}
+.f-input,.f-select,.f-textarea{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.6rem 0.85rem;font-family:'Rajdhani',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.2s;width:100%;-webkit-appearance:none;appearance:none;border-radius:0;}
+.f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--orange);}
+.f-select option{background:#1a1a1a;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;}
+.activity-list{display:flex;flex-direction:column;gap:0.6rem;}
+.activity-item{display:flex;align-items:flex-start;gap:1rem;padding:0.7rem 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.activity-dot.red{background:var(--red);}
+.activity-dot.green{background:var(--green);}
+.activity-dot.orange{background:var(--orange);}
+.activity-text{font-size:0.85rem;color:#ccc;}
+.activity-time{font-size:0.72rem;color:var(--muted);margin-top:0.15rem;}
+.config-card{background:var(--black2);border:1px solid rgba(255,140,0,0.2);padding:1.5rem;margin-bottom:1rem;}
+.config-title{font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+.config-warn{background:rgba(255,140,0,0.08);border:1px solid rgba(255,140,0,0.25);padding:0.75rem 1rem;font-size:0.82rem;color:var(--orange);margin-bottom:1rem;}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;left:1.5rem;max-width:360px;margin-left:auto;background:var(--panel);border:1px solid var(--border);padding:0.85rem 1.2rem;font-family:'Orbitron',monospace;font-size:0.68rem;letter-spacing:0.1em;z-index:9998;transform:translateY(120px);opacity:0;transition:all 0.3s;}
 .toast.show{transform:translateY(0);opacity:1;}
-.danger-zone{background:rgba(224,0,32,0.05);border:1px solid rgba(224,0,32,0.2);padding:1.5rem;margin-top:1.5rem;}
-.danger-title{font-family:'Orbitron',monospace;font-size:0.7rem;color:var(--red);margin-bottom:1rem;letter-spacing:0.1em;}
+.toast.success{border-color:rgba(0,200,80,0.4);color:var(--green);}
+.toast.error{border-color:rgba(224,0,32,0.4);color:var(--red);}
+.toast.info{border-color:rgba(255,140,0,0.4);color:var(--orange);}
+.danger-zone{border:1px solid rgba(224,0,32,0.4);background:rgba(224,0,32,0.04);padding:1.2rem;margin-top:1rem;}
+.danger-title{font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--red);letter-spacing:0.25em;margin-bottom:1rem;}
+@media(max-width:768px){
+  .mob-topbar{display:flex;}
+  aside{transform:translateX(-100%);}
+  aside.open{transform:translateX(0);}
+  .mob-overlay.show{display:block;}
+  main{margin-left:0;padding-top:52px;}
+  .page{padding:1rem;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .page-header{flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 </head>
 <body>
 
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-title">⚡ SUPER ADMIN</div>
-    <div class="login-sub">// ACCÈS NIVEAU SUPÉRIEUR — J4CK'S LOCATION</div>
+    <div class="login-title">J4CK'S LOCATION</div>
+    <div class="login-sub">// SUPER ADMINISTRATEUR</div>
     <label class="l-label">Mot de passe Super Admin</label>
     <input type="password" class="l-input" id="l-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="l-btn" onclick="doLogin()">Accéder →</button>
-    <div class="l-err" id="l-err">// ACCÈS REFUSÉ</div>
+    <button class="l-btn" onclick="doLogin()">Accès Super Admin →</button>
+    <div class="l-err" id="l-err">// ACCÈS REFUSÉ — NIVEAU INSUFFISANT</div>
+    <div style="margin-top:1.2rem;text-align:center;"><a href="/admin" style="font-family:'Orbitron',monospace;font-size:0.6rem;color:var(--muted);text-decoration:none;letter-spacing:0.15em;">← Admin normal</a></div>
   </div>
 </div>
 
-<aside>
+<div class="mob-topbar">
+  <span class="mob-logo"><span>J4</span>CK'S SUPER</span>
+  <button class="mob-menu-btn" onclick="toggleSidebar()">☰</button>
+</div>
+<div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()"></div>
+
+<div class="admin-layout">
+<aside id="sidebar">
   <div class="sidebar-logo">
-    <span>⚡ J4CK'S SUPER ADMIN</span>
-    <div class="sidebar-role">// NIVEAU MAXIMUM</div>
+    <a href="/"><span>J4</span>CK'S LOCATION</a>
+    <div class="sidebar-role">// SUPER ADMIN ⚡</div>
   </div>
   <nav class="side-nav">
-    <div class="nav-item active" onclick="goPage('overview')"><span>📊</span> Vue Globale</div>
-    <div class="nav-item" onclick="goPage('config')"><span>⚙️</span> Configuration</div>
-    <div class="nav-item" onclick="goPage('admins')"><span>👥</span> Admins</div>
-    <div class="nav-item" onclick="goPage('database')"><span>🗄️</span> Base de données</div>
-    <div class="nav-item" onclick="goPage('logs')"><span>📜</span> Logs</div>
+    <div class="nav-section">Supervision</div>
+    <div class="nav-item active" onclick="goPage('dashboard',this)"><span>📊</span> Vue Globale</div>
+    <div class="nav-item" onclick="goPage('reservations',this)"><span>📅</span> Toutes Réservations</div>
+    <div class="nav-item" onclick="goPage('vehicles',this)"><span>🚗</span> Flotte Complète</div>
+    <div class="nav-item" onclick="goPage('contracts',this)"><span>📄</span> Tous les Contrats</div>
+    <div class="nav-section">Administration</div>
+    <div class="nav-item" onclick="goPage('config',this)"><span>⚙️</span> Configuration</div>
+    <div class="nav-item" onclick="goPage('export',this)"><span>📦</span> Export / Backup</div>
+    <div class="nav-section">IA</div>
+    <div class="nav-item" onclick="goPage('ai',this)"><span>🤖</span> Assistant IA</div>
   </nav>
   <div class="sidebar-footer">
-    <a href="/admin" style="display:block;text-align:center;color:var(--muted);font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.1em;margin-bottom:0.8rem;text-decoration:none;">→ Admin Normal</a>
     <button class="logout-btn" onclick="doLogout()">// Déconnexion</button>
   </div>
 </aside>
 
 <main>
 
-  <!-- OVERVIEW -->
-  <div class="page active" id="page-overview">
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
     <div class="page-header">
-      <div><div class="page-tag">// SUPER ADMIN</div><div class="page-title">Vue Globale</div></div>
-      <span class="badge-gold">ACCÈS TOTAL</span>
+      <div><div class="page-tag">// SUPER ADMIN — VUE GLOBALE</div><div class="page-title">Dashboard</div></div>
     </div>
     <div class="stats-grid">
-      <div class="stat-card"><span class="s-num" id="ov-v">—</span><div class="s-label">Véhicules</div></div>
-      <div class="stat-card"><span class="s-num" id="ov-r">—</span><div class="s-label">Réservations</div></div>
-      <div class="stat-card"><span class="s-num" id="ov-c">—</span><div class="s-label">Contrats</div></div>
-      <div class="stat-card"><span class="s-num" id="ov-rev">—</span><div class="s-label">Revenus Total</div></div>
+      <div class="stat-card red"><span class="s-num" id="d-v">—</span><div class="s-label">Véhicules</div></div>
+      <div class="stat-card orange"><span class="s-num" id="d-r">—</span><div class="s-label">Réservations</div></div>
+      <div class="stat-card green"><span class="s-num" id="d-rev">—</span><div class="s-label">Revenus (€)</div></div>
+      <div class="stat-card blue"><span class="s-num" id="d-c">—</span><div class="s-label">Contrats</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">// ACTIVITÉ RÉCENTE</div>
-      <div id="ov-activity" style="color:var(--muted);font-size:0.85rem;">Chargement...</div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">// Réservations récentes</div></div>
+        <div class="panel-body" style="padding:0;">
+          <div class="table-wrap" style="border:none;">
+            <table><thead><tr><th>Client</th><th>Statut</th><th>Date</th></tr></thead><tbody id="d-resas"></tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">// Activité récente</div></div>
+        <div class="panel-body">
+          <div class="activity-list" id="activity-list">
+            <div style="color:var(--muted);font-size:0.82rem;">Chargement...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOUTES RÉSERVATIONS -->
+  <div class="page" id="page-reservations">
+    <div class="page-header">
+      <div><div class="page-tag">// SUPERVISION</div><div class="page-title">Toutes les Réservations</div></div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="filterResas('all')">Toutes</button>
+        <button class="btn btn-outline btn-sm" onclick="filterResas('pending')">En attente</button>
+        <button class="btn btn-green btn-sm" onclick="filterResas('confirmed')">Confirmées</button>
+        <button class="btn btn-red btn-sm" onclick="filterResas('cancelled')">Annulées</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Client</th><th>Email</th><th>Tél</th><th>Véhicule</th><th>Début</th><th>Fin</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="r-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FLOTTE -->
+  <div class="page" id="page-vehicles">
+    <div class="page-header">
+      <div><div class="page-tag">// SUPERVISION</div><div class="page-title">Flotte Complète</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Modèle</th><th>Marque</th><th>Plaque</th><th>Km</th><th>Prix/j</th><th>Statut</th></tr></thead>
+        <tbody id="v-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONTRATS -->
+  <div class="page" id="page-contracts">
+    <div class="page-header">
+      <div><div class="page-tag">// SUPERVISION</div><div class="page-title">Tous les Contrats</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Date création</th><th>Actions</th></tr></thead>
+        <tbody id="c-list"></tbody>
+      </table>
+    </div>
+    <div id="contract-viewer" style="display:none;margin-top:1.2rem;">
+      <div style="font-family:'Orbitron',monospace;font-size:0.62rem;color:var(--orange);letter-spacing:0.28em;margin-bottom:0.8rem;">// APERÇU DU CONTRAT</div>
+      <div id="contract-content" style="background:var(--black2);border:1px solid var(--border);padding:1.5rem;font-family:'Rajdhani',sans-serif;font-size:0.88rem;line-height:1.7;white-space:pre-wrap;max-height:500px;overflow-y:auto;"></div>
+      <div style="margin-top:0.8rem;display:flex;gap:0.6rem;">
+        <button class="btn btn-outline btn-sm" onclick="copyText('contract-content')">Copier</button>
+        <button class="btn btn-green btn-sm" onclick="printEl('contract-content')">Imprimer</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('contract-viewer').style.display='none'">Fermer</button>
+      </div>
     </div>
   </div>
 
   <!-- CONFIG -->
   <div class="page" id="page-config">
     <div class="page-header">
-      <div><div class="page-tag">// CONFIG</div><div class="page-title">Configuration Système</div></div>
+      <div><div class="page-tag">// ADMINISTRATION</div><div class="page-title">Configuration</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">// INFORMATIONS AGENCE</div>
-      <div class="form-grid">
-        <div class="f-group"><label class="f-label">Nom de l'agence</label><input class="f-input" id="cfg-name" value="J4CK'S Location"></div>
-        <div class="f-group"><label class="f-label">Email contact</label><input class="f-input" id="cfg-email" placeholder="contact@j4cks.fr"></div>
-        <div class="f-group"><label class="f-label">Téléphone</label><input class="f-input" id="cfg-tel" placeholder="+33 6 00 00 00 00"></div>
-        <div class="f-group"><label class="f-label">Ville</label><input class="f-input" id="cfg-city" value="Mulhouse, France"></div>
-        <div class="f-group"><label class="f-label">Instagram</label><input class="f-input" id="cfg-ig" placeholder="@j4cks.location"></div>
-        <div class="f-group"><label class="f-label">WhatsApp</label><input class="f-input" id="cfg-wa" placeholder="+33 6 00 00 00 00"></div>
-      </div>
-      <button class="btn btn-gold" onclick="saveConfig()">Sauvegarder →</button>
-    </div>
-    <div class="card">
-      <div class="card-title">// PARAMÈTRES LOCATION</div>
-      <div class="form-grid">
-        <div class="f-group"><label class="f-label">Caution par défaut (€)</label><input class="f-input" id="cfg-caution" placeholder="800"></div>
-        <div class="f-group"><label class="f-label">Âge minimum conducteur</label><input class="f-input" id="cfg-age" placeholder="21"></div>
-        <div class="f-group"><label class="f-label">Durée min location (jours)</label><input class="f-input" id="cfg-mindays" placeholder="1"></div>
-        <div class="f-group"><label class="f-label">Durée max location (jours)</label><input class="f-input" id="cfg-maxdays" placeholder="30"></div>
-      </div>
-      <button class="btn btn-gold" onclick="toast('Paramètres sauvegardés !')">Sauvegarder →</button>
-    </div>
-    <div class="card">
-      <div class="card-title">// CLÉ API ANTHROPIC (IA)</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">La clé API est stockée dans le fichier <code style="color:var(--gold);background:rgba(255,215,0,0.1);padding:0.1rem 0.4rem;">.env</code> sur le serveur. Ne la partagez jamais. Pour la changer, modifiez directement le fichier .env et redémarrez le serveur.</p>
-      <div class="f-group"><label class="f-label">Statut API</label><span class="badge-gold" id="api-status">Vérification...</span></div>
-      <button class="btn btn-outline" onclick="checkAPI()">Vérifier la connexion IA</button>
-    </div>
-  </div>
-
-  <!-- ADMINS -->
-  <div class="page" id="page-admins">
-    <div class="page-header">
-      <div><div class="page-tag">// ACCÈS</div><div class="page-title">Gestion des Admins</div></div>
-    </div>
-    <div class="card">
-      <div class="card-title">// COMPTES ACTUELS</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Rôle</th><th>Accès</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr><td><span class="badge-gold">SUPER ADMIN</span></td><td>Accès total — configuration, base de données, logs</td><td>—</td></tr>
-            <tr><td style="color:#fff;font-weight:600;">ADMIN</td><td>Véhicules, réservations, contrats, IA</td><td><button class="btn btn-outline" onclick="resetAdminPwd()" style="font-size:0.55rem;">Changer MDP</button></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="margin-top:1.5rem;">
-        <div class="card-title">// CHANGER MOT DE PASSE ADMIN</div>
-        <div class="form-grid">
-          <div class="f-group"><label class="f-label">Nouveau mot de passe admin</label><input class="f-input" type="password" id="new-admin-pwd" placeholder="Nouveau MDP"></div>
-          <div class="f-group"><label class="f-label">Confirmer</label><input class="f-input" type="password" id="new-admin-pwd2" placeholder="Confirmer MDP"></div>
+    <div class="config-warn">⚠️ Zone réservée au Super Administrateur. Toute modification est immédiate.</div>
+    <div class="grid-2">
+      <div>
+        <div class="config-card">
+          <div class="config-title">🔑 Changer mot de passe Admin</div>
+          <div class="f-group"><label class="f-label">Nouveau mot de passe admin</label><input type="password" class="f-input" id="new-admin-pwd" placeholder="Nouveau mdp admin"></div>
+          <button class="btn btn-orange" onclick="changePassword('admin')">Mettre à jour</button>
         </div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">⚠️ Modifiez ensuite le fichier .env sur le serveur et redémarrez pour appliquer.</p>
-        <button class="btn btn-gold" onclick="changeAdminPwd()">Appliquer →</button>
+        <div class="config-card">
+          <div class="config-title">👑 Changer mot de passe Super Admin</div>
+          <div class="f-group"><label class="f-label">Nouveau mot de passe super admin</label><input type="password" class="f-input" id="new-super-pwd" placeholder="Nouveau mdp super admin"></div>
+          <button class="btn btn-orange" onclick="changePassword('superadmin')">Mettre à jour</button>
+        </div>
+      </div>
+      <div>
+        <div class="config-card">
+          <div class="config-title">🏢 Informations Agence</div>
+          <div class="f-group"><label class="f-label">Nom agence</label><input class="f-input" id="cfg-name" value="J4CK'S Location"></div>
+          <div class="f-group"><label class="f-label">Téléphone</label><input class="f-input" id="cfg-tel" placeholder="+33 6 00 00 00 00"></div>
+          <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="cfg-email" placeholder="contact@j4cks.fr"></div>
+          <div class="f-group"><label class="f-label">Ville</label><input class="f-input" id="cfg-city" value="Mulhouse, France"></div>
+          <button class="btn btn-orange" onclick="saveConfig()">Sauvegarder</button>
+        </div>
+        <div class="danger-zone">
+          <div class="danger-title">// ZONE DANGEREUSE</div>
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">Ces actions sont irréversibles.</div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <button class="btn btn-red" onclick="confirmAction('Supprimer TOUTES les réservations ?',resetReservations)">🗑 Réinitialiser réservations</button>
+            <button class="btn btn-red" onclick="confirmAction('Supprimer TOUS les contrats ?',resetContracts)">🗑 Réinitialiser contrats</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- DATABASE -->
-  <div class="page" id="page-database">
+  <!-- EXPORT -->
+  <div class="page" id="page-export">
     <div class="page-header">
-      <div><div class="page-tag">// DATA</div><div class="page-title">Base de Données</div></div>
+      <div><div class="page-tag">// ADMINISTRATION</div><div class="page-title">Export & Backup</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">// APERÇU DES DONNÉES</div>
-      <div class="stats-grid" style="margin-bottom:0;">
-        <div class="stat-card"><span class="s-num" id="db-v">—</span><div class="s-label">Véhicules</div></div>
-        <div class="stat-card"><span class="s-num" id="db-r">—</span><div class="s-label">Réservations</div></div>
-        <div class="stat-card"><span class="s-num" id="db-c">—</span><div class="s-label">Contrats</div></div>
-        <div class="stat-card"><span class="s-num" id="db-rev">—</span><div class="s-label">Revenus (€)</div></div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">// Exporter les données</div></div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:0.8rem;">
+          <button class="btn btn-orange" onclick="exportData('reservations')">📅 Exporter Réservations (JSON)</button>
+          <button class="btn btn-orange" onclick="exportData('vehicles')">🚗 Exporter Véhicules (JSON)</button>
+          <button class="btn btn-orange" onclick="exportData('contracts')">📄 Exporter Contrats (JSON)</button>
+          <button class="btn btn-orange" onclick="exportData('all')">📦 Backup Complet (JSON)</button>
+        </div>
       </div>
-      <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
-        <button class="btn btn-gold" onclick="exportDB()">📥 Exporter JSON</button>
-        <button class="btn btn-outline" onclick="loadDBStats()">🔄 Rafraîchir</button>
-      </div>
-    </div>
-    <div class="danger-zone">
-      <div class="danger-title">⚠️ ZONE DANGEREUSE</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Ces actions sont irréversibles. Procédez avec extrême prudence.</p>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-        <button class="btn btn-red" onclick="clearReservations()">Vider les réservations</button>
-        <button class="btn btn-red" onclick="clearContracts()">Vider les contrats</button>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">// Statistiques complètes</div></div>
+        <div class="panel-body">
+          <div id="full-stats" style="font-family:'Orbitron',monospace;font-size:0.7rem;line-height:2;color:#ccc;">Chargement...</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- LOGS -->
-  <div class="page" id="page-logs">
+  <!-- IA -->
+  <div class="page" id="page-ai">
     <div class="page-header">
-      <div><div class="page-tag">// SYSTÈME</div><div class="page-title">Logs d'Activité</div></div>
-      <button class="btn btn-outline" onclick="loadLogs()">🔄 Rafraîchir</button>
+      <div><div class="page-tag">// SUPER ADMIN</div><div class="page-title">Assistant IA Avancé</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">// JOURNAL DES ÉVÉNEMENTS</div>
-      <div id="logs-list"><div style="color:var(--muted);font-size:0.85rem;">Chargement des logs...</div></div>
+    <div style="background:var(--panel);border:1px solid rgba(255,140,0,0.2);display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:400px;">
+      <div style="flex:1;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:0.8rem;" id="chat-msgs">
+        <div class="msg ai"><div class="ai-label">// J4CK'S IA — MODE SUPER ADMIN</div>Bienvenue Super Administrateur. J'ai accès à toutes les données de l'agence. Je peux générer des rapports, analyser les performances, et vous aider à prendre les meilleures décisions. Que voulez-vous savoir ?</div>
+      </div>
+      <div style="padding:0.85rem;border-top:1px solid rgba(255,140,0,0.2);display:flex;gap:0.6rem;">
+        <input style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.65rem 0.85rem;font-family:'Rajdhani',sans-serif;font-size:0.95rem;outline:none;min-width:0;border-radius:0;transition:border-color 0.2s;" id="chat-input" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="btn btn-orange" onclick="sendMsg()">→</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem;margin-top:1rem;">
+      <button onclick="quickMsg('Génère un rapport complet de l\'activité de l\'agence ce mois.')" style="background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.15);color:var(--muted);padding:0.7rem;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.82rem;text-align:left;transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">📊 Rapport mensuel</button>
+      <button onclick="quickMsg('Analyse les performances des véhicules et recommande des optimisations.')" style="background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.15);color:var(--muted);padding:0.7rem;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.82rem;text-align:left;transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">🚗 Performance flotte</button>
+      <button onclick="quickMsg('Quels sont les risques légaux à surveiller pour notre agence de location ?')" style="background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.15);color:var(--muted);padding:0.7rem;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.82rem;text-align:left;transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">⚖️ Risques légaux</button>
+      <button onclick="quickMsg('Propose une stratégie de développement pour l\'agence sur 6 mois.')" style="background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.15);color:var(--muted);padding:0.7rem;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.82rem;text-align:left;transition:all 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">📈 Plan croissance</button>
     </div>
   </div>
 
 </main>
+</div>
+
+<style>
+.msg{max-width:85%;padding:0.75rem 1rem;font-size:0.88rem;line-height:1.5;}
+.msg.user{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.2);align-self:flex-end;color:#fff;}
+.msg.ai{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);align-self:flex-start;color:var(--text);}
+.msg.ai .ai-label{font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.2em;color:var(--orange);margin-bottom:0.35rem;}
+</style>
 
 <div class="toast" id="toast"></div>
 
 <script>
+let currentRole=null,allResas=[];
+
+function toggleSidebar(){const s=document.getElementById('sidebar');const o=document.getElementById('mob-overlay');s.classList.toggle('open');o.classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('mob-overlay').classList.remove('show');}
+
 async function doLogin(){
   const pwd=document.getElementById('l-pwd').value;
-  const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd,role:'superadmin'})});
-  if(!r.ok){document.getElementById('l-err').style.display='block';return;}
-  document.getElementById('login-screen').style.display='none';
-  loadAll();
+  const err=document.getElementById('l-err');
+  err.style.display='none';
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd,role:'superadmin'})});
+    if(!r.ok){err.style.display='block';return;}
+    const d=await r.json();
+    currentRole=d.role;
+    document.getElementById('login-screen').style.display='none';
+    loadAll();
+  }catch(e){err.style.display='block';}
 }
 async function doLogout(){await fetch('/api/logout',{method:'POST'});location.reload();}
-async function checkSession(){const r=await fetch('/api/me');const d=await r.json();if(d.role==='superadmin'){document.getElementById('login-screen').style.display='none';loadAll();}}
+async function checkSession(){
+  try{
+    const r=await fetch('/api/me');const d=await r.json();
+    if(d.role==='superadmin'){currentRole=d.role;document.getElementById('login-screen').style.display='none';loadAll();}
+  }catch(e){}
+}
 
-function goPage(p){
+function goPage(p,el){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if(p==='overview')loadOverview();
-  if(p==='database')loadDBStats();
-  if(p==='logs')loadLogs();
+  if(el)el.classList.add('active');
+  closeSidebar();
+  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:loadVehicles,contracts:loadContracts,export:loadExport};
+  if(map[p])map[p]();
 }
 
-function loadAll(){loadOverview();loadDBStats();}
+function loadAll(){loadDashboard();loadReservations();loadVehicles();loadContracts();}
 
-async function loadOverview(){
-  const s=await(await fetch('/api/stats')).json();
-  document.getElementById('ov-v').textContent=s.vehicles;
-  document.getElementById('ov-r').textContent=s.reservations;
-  document.getElementById('ov-c').textContent=s.contracts;
-  document.getElementById('ov-rev').textContent=s.revenue+'€';
-  const resas=await(await fetch('/api/reservations')).json();
-  const html=resas.slice(0,8).map(r=>`<div class="log-entry"><span class="log-time">${new Date(r.createdAt).toLocaleDateString('fr-FR')}</span><span class="log-msg">Réservation : <strong>${r.prenom} ${r.nom}</strong> — ${r.startDate} → ${r.endDate} — <em>${r.status}</em></span></div>`).join('');
-  document.getElementById('ov-activity').innerHTML=html||'<span style="color:var(--muted)">Aucune activité récente</span>';
-}
-
-async function loadDBStats(){
-  const s=await(await fetch('/api/stats')).json();
-  document.getElementById('db-v').textContent=s.vehicles;
-  document.getElementById('db-r').textContent=s.reservations;
-  document.getElementById('db-c').textContent=s.contracts;
-  document.getElementById('db-rev').textContent=s.revenue+'€';
-}
-
-async function exportDB(){
-  const v=await(await fetch('/api/vehicles')).json();
-  const r=await(await fetch('/api/reservations')).json();
-  const c=await(await fetch('/api/contracts')).json();
-  const data=JSON.stringify({vehicles:v,reservations:r,contracts:c,exportDate:new Date().toISOString()},null,2);
-  const a=document.createElement('a');a.href='data:text/json;charset=utf-8,'+encodeURIComponent(data);a.download='j4cks-backup-'+Date.now()+'.json';a.click();
-  toast('Export téléchargé !');
-}
-
-function saveConfig(){toast('Configuration sauvegardée !');}
-
-async function checkAPI(){
+async function loadDashboard(){
   try{
-    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'ping',context:''})});
-    if(r.ok){document.getElementById('api-status').textContent='✓ CONNECTÉE';toast('IA connectée !');}
-    else{document.getElementById('api-status').textContent='✗ ERREUR';}
-  }catch(e){document.getElementById('api-status').textContent='✗ HORS LIGNE';}
+    const s=await(await fetch('/api/stats')).json();
+    document.getElementById('d-v').textContent=s.vehicles;
+    document.getElementById('d-r').textContent=s.reservations;
+    document.getElementById('d-rev').textContent=s.revenue+'€';
+    document.getElementById('d-c').textContent=s.contracts;
+    const resas=await(await fetch('/api/reservations')).json();
+    document.getElementById('d-resas').innerHTML=resas.slice(0,8).map(r=>`<tr><td>${r.prenom||''} ${r.nom||''}</td><td><span class="badge ${r.status}">${r.status}</span></td><td style="font-size:0.78rem;color:var(--muted)">${r.startDate||'—'}</td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:1.5rem;">Aucune réservation</td></tr>';
+    const activities=[];
+    resas.slice(0,5).forEach(r=>activities.push({dot:r.status==='confirmed'?'green':r.status==='cancelled'?'red':'orange',text:`Réservation ${r.status} — ${r.prenom||''} ${r.nom||''}`,time:r.createdAt?new Date(r.createdAt).toLocaleString('fr-FR'):'—'}));
+    document.getElementById('activity-list').innerHTML=activities.length?activities.map(a=>`<div class="activity-item"><div class="activity-dot ${a.dot}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`).join(''):'<div style="color:var(--muted);font-size:0.82rem;">Aucune activité récente</div>';
+  }catch(e){}
 }
 
-function changeAdminPwd(){
-  const p1=document.getElementById('new-admin-pwd').value;
-  const p2=document.getElementById('new-admin-pwd2').value;
-  if(!p1){toast('Entrez un mot de passe','error');return;}
-  if(p1!==p2){toast('Les mots de passe ne correspondent pas','error');return;}
-  toast('Mettez à jour ADMIN_PASSWORD='+p1+' dans le fichier .env et redémarrez le serveur.');
+async function loadReservations(filter='all'){
+  try{
+    allResas=await(await fetch('/api/reservations')).json();
+    const filtered=filter==='all'?allResas:allResas.filter(r=>r.status===filter);
+    document.getElementById('r-list').innerHTML=filtered.length
+      ?filtered.map(r=>`<tr><td><strong>${r.prenom||''} ${r.nom||''}</strong></td><td style="font-size:0.78rem">${r.email||'—'}</td><td>${r.tel||'—'}</td><td>${r.vehicleId||'—'}</td><td>${r.startDate||'—'}</td><td>${r.endDate||'—'}</td><td>${r.totalPrice?r.totalPrice+'€':'—'}</td><td><span class="badge ${r.status}">${r.status}</span></td><td style="white-space:nowrap"><button class="btn btn-green btn-sm" onclick="changeStatus('${r.id}','confirmed')">✓</button> <button class="btn btn-red btn-sm" onclick="changeStatus('${r.id}','cancelled')">✗</button></td></tr>`).join('')
+      :'<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">Aucune réservation</td></tr>';
+  }catch(e){}
+}
+function filterResas(f){loadReservations(f);}
+
+async function changeStatus(id,status){
+  await fetch('/api/reservations/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+  loadReservations();loadDashboard();toast('Statut mis à jour','success');
 }
 
-async function clearReservations(){
-  if(!confirm('ATTENTION : Supprimer TOUTES les réservations ? Cette action est irréversible.'))return;
-  toast('Fonctionnalité disponible via le fichier db.json directement.');
-}
-async function clearContracts(){
-  if(!confirm('ATTENTION : Supprimer TOUS les contrats ? Cette action est irréversible.'))return;
-  toast('Fonctionnalité disponible via le fichier db.json directement.');
+async function loadVehicles(){
+  try{
+    const v=await(await fetch('/api/vehicles')).json();
+    document.getElementById('v-list').innerHTML=v.length
+      ?v.map(x=>`<tr><td><strong>${x.model||'—'}</strong></td><td>${x.brand||'—'}</td><td style="font-family:monospace;font-size:0.82rem">${x.plate||'—'}</td><td>${x.km||'—'}</td><td><strong>${x.pricePerDay||'—'}€</strong></td><td><span class="badge ${x.status||'available'}">${x.status||'available'}</span></td></tr>`).join('')
+      :'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Aucun véhicule</td></tr>';
+  }catch(e){}
 }
 
-async function loadLogs(){
+async function loadContracts(){
+  try{
+    const c=await(await fetch('/api/contracts')).json();
+    document.getElementById('c-list').innerHTML=c.length
+      ?c.map(x=>`<tr><td><strong>${x.type||'location'}</strong></td><td>${x.createdAt?new Date(x.createdAt).toLocaleString('fr-FR'):'—'}</td><td><button class="btn btn-outline btn-sm" onclick="viewContract(${JSON.stringify(x.content||'').replace(/"/g,'&quot;')})">Voir</button> <button class="btn btn-red btn-sm" onclick="deleteContract('${x.id}')">🗑</button></td></tr>`).join('')
+      :'<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:1.5rem;">Aucun contrat</td></tr>';
+  }catch(e){}
+}
+
+function viewContract(content){
+  document.getElementById('contract-viewer').style.display='block';
+  document.getElementById('contract-content').textContent=content;
+  document.getElementById('contract-viewer').scrollIntoView({behavior:'smooth'});
+}
+
+async function deleteContract(id){
+  if(!confirm('Supprimer ce contrat ?'))return;
+  await fetch('/api/contracts/'+id,{method:'DELETE'});
+  loadContracts();toast('Contrat supprimé','success');
+}
+
+async function loadExport(){
+  try{
+    const s=await(await fetch('/api/stats')).json();
+    document.getElementById('full-stats').innerHTML=
+      `Véhicules total : ${s.vehicles}<br>Réservations total : ${s.reservations}<br>Confirmées : ${s.confirmed}<br>En attente : ${s.pending}<br>Contrats : ${s.contracts}<br>Revenus confirmés : ${s.revenue} €`;
+  }catch(e){}
+}
+
+async function exportData(type){
+  try{
+    let data,filename;
+    if(type==='all'){
+      const [v,r,c]=await Promise.all([fetch('/api/vehicles').then(x=>x.json()),fetch('/api/reservations').then(x=>x.json()),fetch('/api/contracts').then(x=>x.json())]);
+      data={vehicles:v,reservations:r,contracts:c,exportedAt:new Date().toISOString()};filename='j4cks-backup.json';
+    }else{
+      data=await(await fetch('/api/'+type)).then(x=>x.json());filename=`j4cks-${type}.json`;
+    }
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+    toast('Export téléchargé !','success');
+  }catch(e){toast('Erreur export','error');}
+}
+
+function changePassword(role){
+  const val=document.getElementById(role==='admin'?'new-admin-pwd':'new-super-pwd').value;
+  if(!val||val.length<6){toast('Mot de passe trop court (6 min)','error');return;}
+  toast('⚠️ Pour changer le mdp en production, modifie la variable '+role.toUpperCase()+'_PASSWORD dans Render et redémarre.','info');
+}
+
+function saveConfig(){toast('Config sauvegardée (informations d\'affichage).','success');}
+
+async function resetReservations(){
   const resas=await(await fetch('/api/reservations')).json();
-  const vehicles=await(await fetch('/api/vehicles')).json();
-  const logs=[
-    ...resas.map(r=>({date:r.createdAt,msg:`Réservation reçue de ${r.prenom} ${r.nom} (${r.status})`})),
-    ...vehicles.map(v=>({date:v.createdAt,msg:`Véhicule ajouté : ${v.brand} ${v.model}`}))
-  ].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  document.getElementById('logs-list').innerHTML=logs.length?logs.map(l=>`<div class="log-entry"><span class="log-time">${new Date(l.date).toLocaleString('fr-FR')}</span><span class="log-msg">${l.msg}</span></div>`).join(''):'<span style="color:var(--muted)">Aucun log disponible</span>';
+  for(const r of resas)await fetch('/api/reservations/'+r.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'cancelled'})});
+  loadAll();toast('Réservations réinitialisées','success');
 }
 
-function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show';setTimeout(()=>t.className='toast',4000);}
+async function resetContracts(){
+  const c=await(await fetch('/api/contracts')).json();
+  for(const x of c)await fetch('/api/contracts/'+x.id,{method:'DELETE'});
+  loadContracts();toast('Contrats supprimés','success');
+}
+
+function confirmAction(msg,fn){if(confirm(msg))fn();}
+
+// IA
+let isTyping=false;
+async function sendMsg(){
+  if(isTyping)return;
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();if(!msg)return;
+  addMsg(msg,'user');input.value='';isTyping=true;
+  const aiDiv=addMsg('Analyse en cours...','ai');
+  try{
+    const db=await(await fetch('/api/stats')).json();
+    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,context:JSON.stringify(db)})});
+    const d=await r.json();
+    aiDiv.querySelector('.ai-label').nextSibling.textContent=d.reply||d.error||'Erreur';
+  }catch(e){aiDiv.innerHTML='<div class="ai-label">// IA</div>Erreur de connexion.';}
+  isTyping=false;
+  document.getElementById('chat-msgs').scrollTop=99999;
+}
+function quickMsg(msg){document.getElementById('chat-input').value=msg;sendMsg();}
+function addMsg(text,role){
+  const container=document.getElementById('chat-msgs');
+  const div=document.createElement('div');div.className='msg '+role;
+  div.innerHTML=role==='ai'?`<div class="ai-label">// J4CK'S IA</div>${text}`:text;
+  container.appendChild(div);container.scrollTop=99999;return div;
+}
+
+function copyText(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('Copié !','success'));}
+function printEl(id){const w=window.open('','_blank');w.document.write('<pre style="font-family:Arial;font-size:12px;padding:2rem;white-space:pre-wrap;">'+document.getElementById(id).textContent+'</pre>');w.print();}
+function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',4000);}
 
 checkSession();
 </script>
