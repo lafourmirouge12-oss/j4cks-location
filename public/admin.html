@@ -116,6 +116,8 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .chat-input-row{padding:0.85rem;border-top:1px solid var(--border);display:flex;gap:0.6rem;}
 .chat-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.65rem 0.85rem;font-family:'Rajdhani',sans-serif;font-size:0.95rem;outline:none;min-width:0;border-radius:0;}
 .chat-input:focus{border-color:var(--red);}
+.btn-upload{display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);cursor:pointer;transition:all 0.2s;flex-shrink:0;font-size:1rem;}
+.btn-upload:hover{border-color:var(--red);background:rgba(224,0,32,0.1);}
 .ai-actions{background:var(--panel);border:1px solid var(--border);padding:1.2rem;display:flex;flex-direction:column;gap:0.6rem;overflow-y:auto;}
 .ai-actions-title{font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.28em;color:var(--red);text-transform:uppercase;margin-bottom:0.4rem;}
 .quick-btn{width:100%;text-align:left;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:var(--muted);padding:0.65rem 0.9rem;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.8rem;transition:all 0.2s;line-height:1.3;}
@@ -304,7 +306,8 @@ tr:hover td{background:rgba(255,255,255,0.02);}
           <div class="msg ai"><div class="ai-label">// J4CK'S IA</div>Bonjour ! Je suis votre assistant IA. Je peux vous aider à gérer vos réservations, analyser votre flotte, rédiger des messages clients ou répondre à vos questions. Comment puis-je vous aider ?</div>
         </div>
         <div class="chat-input-row">
-          <input class="chat-input" id="chat-input" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendMsg()">
+          <label class="btn-upload" title="Importer photo / fichier"><span>📎</span><input type="file" id="file-input" accept="image/*,.pdf,.txt,.json,.csv" style="display:none" onchange="handleFile(this)"></label>
+          <input class="chat-input" id="chat-input" placeholder="Message ou importez un fichier..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendMsg()">
           <button class="btn btn-red" onclick="sendMsg()">→</button>
         </div>
       </div>
@@ -541,6 +544,32 @@ async function deleteVehicle(id){
   if(!confirm('Supprimer ce véhicule ?'))return;
   await fetch('/api/vehicles/'+id,{method:'DELETE'});
   loadVehicles();loadDashboard();toast('Véhicule supprimé.','success');
+}
+
+// FILE IMPORT
+function handleFile(input){
+  const file=input.files[0];if(!file)return;
+  const isImage=file.type.startsWith('image/');
+  if(isImage){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const preview=`<div style="margin-bottom:0.3rem;font-size:0.72rem;color:var(--muted)">📎 ${file.name}</div><img src="${e.target.result}" style="max-width:200px;max-height:140px;object-fit:cover;border:1px solid var(--border);">`;
+      const div=document.createElement('div');div.className='msg user';div.innerHTML=preview;
+      document.getElementById('chat-msgs').appendChild(div);
+      document.getElementById('chat-msgs').scrollTop=99999;
+      document.getElementById('chat-input').value=`J'ai importé une photo : ${file.name}. Analyse-la et dis-moi ce que tu en penses pour mon agence.`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const content=e.target.result.slice(0,3000);
+      addMsg(`📎 Fichier importé : ${file.name}`,'user');
+      document.getElementById('chat-input').value=`Voici le contenu du fichier "${file.name}" : ${content}. Analyse et donne-moi des conseils.`;
+    };
+    reader.readAsText(file);
+  }
+  input.value='';
 }
 
 // IA
