@@ -160,6 +160,7 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
     <li><a href="#booking">Réserver</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <a href="/client.html" class="nav-cta" style="margin-right:0.5rem;background:transparent;border:1px solid rgba(224,0,32,0.4);color:var(--red);">Mon Espace</a>
   <a href="#booking" class="nav-cta">Réserver</a>
 </nav>
 
@@ -168,21 +169,21 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
   <div class="hero-corner tl"></div><div class="hero-corner tr"></div>
   <div class="hero-corner bl"></div><div class="hero-corner br"></div>
   <div class="hero-content">
-    <span class="hero-badge">// Agence de Location Prestige — Mulhouse</span>
-    <h1 class="hero-title">J4CK'S<br><span class="accent">LOCATION</span></h1>
-    <p class="hero-subtitle">Conduisez <strong>l'exception</strong> · Vivez <strong>le prestige</strong></p>
+    <span class="hero-badge" id="hero-badge-text">// Agence de Location Prestige — Mulhouse</span>
+    <h1 class="hero-title"><span id="hero-t1">J4CK'S</span><br><span class="accent" id="hero-t2">LOCATION</span></h1>
+    <p class="hero-subtitle" id="hero-sub-text">Conduisez <strong>l'exception</strong> · Vivez <strong>le prestige</strong></p>
     <div class="hero-actions">
-      <a href="#fleet" class="btn-primary">Explorer la Flotte</a>
-      <a href="#booking" class="btn-outline">Réserver Maintenant</a>
+      <a href="#fleet" class="btn-primary" id="hero-btn1-text">Explorer la Flotte</a>
+      <a href="#booking" class="btn-outline" id="hero-btn2-text">Réserver Maintenant</a>
     </div>
   </div>
 </section>
 
 <div class="stats-bar">
-  <div class="stat"><span class="stat-number" id="s-v">—</span><span class="stat-label">Véhicules Dispo</span></div>
-  <div class="stat"><span class="stat-number">4.9★</span><span class="stat-label">Note Moyenne</span></div>
+  <div class="stat"><span class="stat-number" id="s-v">—</span><span class="stat-label" id="stat-s1-label">Véhicules Dispo</span></div>
+  <div class="stat"><span class="stat-number" id="stat-s2-val">4.9★</span><span class="stat-label" id="stat-s2-label">Note Moyenne</span></div>
   <div class="stat"><span class="stat-number">24/7</span><span class="stat-label">Assistance</span></div>
-  <div class="stat"><span class="stat-number">100%</span><span class="stat-label">Premium</span></div>
+  <div class="stat"><span class="stat-number" id="stat-s4-val">100%</span><span class="stat-label">Premium</span></div>
 </div>
 
 <section class="fleet" id="fleet">
@@ -197,12 +198,12 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
   <span class="section-tag">// 02 — Services</span>
   <h2 class="section-title">Ce Que Nous Offrons</h2>
   <div class="services-grid">
-    <div class="service-item"><span class="service-icon">🚀</span><div class="service-name">Livraison</div><p class="service-desc">Véhicule livré à votre adresse.</p></div>
-    <div class="service-item"><span class="service-icon">🛡️</span><div class="service-name">Assurance</div><p class="service-desc">Tous risques inclus.</p></div>
-    <div class="service-item"><span class="service-icon">⚡</span><div class="service-name">Express</div><p class="service-desc">Confirmation en 30 min.</p></div>
-    <div class="service-item"><span class="service-icon">💰</span><div class="service-name">Tarifs Clairs</div><p class="service-desc">Aucun frais caché.</p></div>
-    <div class="service-item"><span class="service-icon">📍</span><div class="service-name">GPS</div><p class="service-desc">Véhicules connectés.</p></div>
-    <div class="service-item"><span class="service-icon">🌙</span><div class="service-name">Support 24/7</div><p class="service-desc">Disponible à toute heure.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-0">🚀</span><div class="service-name" id="srv-name-0">Livraison</div><p class="service-desc" id="srv-desc-0">Véhicule livré à votre adresse.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-1">🛡️</span><div class="service-name" id="srv-name-1">Assurance</div><p class="service-desc" id="srv-desc-1">Tous risques inclus.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-2">⚡</span><div class="service-name" id="srv-name-2">Express</div><p class="service-desc" id="srv-desc-2">Confirmation en 30 min.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-3">💰</span><div class="service-name" id="srv-name-3">Tarifs Clairs</div><p class="service-desc" id="srv-desc-3">Aucun frais caché.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-4">📍</span><div class="service-name" id="srv-name-4">GPS</div><p class="service-desc" id="srv-desc-4">Véhicules connectés.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-5">🌙</span><div class="service-name" id="srv-name-5">Support 24/7</div><p class="service-desc" id="srv-desc-5">Disponible à toute heure.</p></div>
   </div>
 </section>
 
@@ -274,14 +275,12 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
 
 <script>
 const OPTIONS = [
-  {id:'plein',name:'🔋 Plein carburant',desc:'Rendu plein ou +40€',price:0,perDay:false},
-  {id:'livraison',name:'🚀 Livraison domicile',desc:'+20€',price:20,perDay:false},
-  {id:'conducteur2',name:'👤 2e conducteur',desc:'+10€/jour',price:10,perDay:true},
+  {id:'livraison',name:'🚀 Livraison à domicile',desc:'+20€',price:20,perDay:false},
+  {id:'conducteur2',name:'👤 2ème conducteur',desc:'+10€/jour',price:10,perDay:true},
   {id:'gps',name:'📍 GPS portable',desc:'+5€/jour',price:5,perDay:true},
-  {id:'siege',name:'🧒 Siège bébé',desc:'+8€/jour',price:8,perDay:true},
-  {id:'assurance',name:'🛡️ Assurance renforcée',desc:'Franchise 0€ · +15€/jour',price:15,perDay:true},
-  {id:'nettoyage',name:'✨ Nettoyage garanti',desc:'+25€',price:25,perDay:false},
-  {id:'retour24',name:'🕐 Retour 24h/24',desc:'Sans contrainte horaire · +10€',price:10,perDay:false},
+  {id:'assurance',name:'🛡️ Assurance franchise 0€',desc:'+15€/jour',price:15,perDay:true},
+  {id:'nettoyage',name:'✨ Nettoyage inclus',desc:'+25€',price:25,perDay:false},
+  {id:'retour24',name:'🕐 Retour 24h/24',desc:'+10€',price:10,perDay:false},
 ];
 
 let selectedOptions=new Set();
@@ -433,80 +432,66 @@ function showN(m,t){
 }
 
 loadVehicles();
-</script>
-  try{
-    const v=await(await fetch('/api/vehicles')).json();
-    const avail=v.filter(x=>!x.status||x.status==='available');
-    document.getElementById('s-v').textContent=avail.length;
-    const g=document.getElementById('fleet-grid');
-    const s=document.getElementById('f-vehicle');
-    if(!v.length){
-      g.innerHTML='<div style="background:var(--black2);padding:3rem;text-align:center;color:var(--muted);font-family:Orbitron,monospace;font-size:0.7rem;grid-column:1/-1;letter-spacing:0.2em;">FLOTTE EN COURS DE CONSTITUTION</div>';
-      return;
-    }
-    g.innerHTML=v.map(x=>{
-      const img=x.image?`<div class="car-visual"><img src="${x.image}" alt="${x.model||''}" loading="lazy"></div>`:`<div class="car-no-img">🚗</div>`;
-      const dispo=!x.status||x.status==='available';
-      return `<div class="car-card">
-        <div class="car-category">// ${x.brand||'Renault'} — ${x.color||'Premium'}</div>
-        ${img}
-        <div class="car-name">${x.model||'Clio 5 Alpine'}</div>
-        <div class="car-brand">${x.brand||'Renault'} · ${x.year||2024}</div>
-        <div class="car-specs">
-          ${x.power?`<span class="spec">⚡ <strong>${x.power}</strong></span>`:''}
-          ${x.transmission?`<span class="spec">🛞 <strong>${x.transmission}</strong></span>`:''}
-          ${x.seats?`<span class="spec">👥 <strong>${x.seats}p</strong></span>`:''}
-        </div>
-        <div class="car-price">
-          <div><span class="price-amount">${x.pricePerDay||79}€</span><span class="price-unit">/jour</span></div>
-          <button class="btn-book" ${dispo?'':`disabled`} onclick="${dispo?`scrollToBook('${x.id}')`:''}">${dispo?'Réserver':'Indispo'}</button>
-        </div>
-      </div>`;
-    }).join('');
-    s.innerHTML='<option value="">Sélectionner...</option>'+avail.map(x=>`<option value="${x.id}">${x.model} — ${x.pricePerDay||79}€/j</option>`).join('');
-  }catch(e){console.error(e);}
-}
 
-function scrollToBook(vehicleId){
-  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
-  setTimeout(()=>{const s=document.getElementById('f-vehicle');if(vehicleId)s.value=vehicleId;},400);
-}
+// ÉDITEUR — reçoit les mises à jour en temps réel
+window.addEventListener('message', e => {
+  if (!e.data || e.data.type !== 'EDITOR_UPDATE') return;
+  const {css, content, fonts} = e.data;
 
-async function submitResa(){
-  const d={
-    prenom:document.getElementById('f-prenom').value.trim(),
-    nom:document.getElementById('f-nom').value.trim(),
-    tel:document.getElementById('f-tel').value.trim(),
-    email:document.getElementById('f-email').value.trim(),
-    vehicleId:document.getElementById('f-vehicle').value,
-    startDate:document.getElementById('f-start').value,
-    endDate:document.getElementById('f-end').value,
-    message:document.getElementById('f-msg').value.trim()
-  };
-  if(!d.prenom||!d.nom||!d.tel||!d.startDate||!d.endDate){showN('Veuillez remplir tous les champs obligatoires.','error');return;}
-  if(d.startDate&&d.endDate&&d.startDate>d.endDate){showN('La date de fin doit être après la date de début.','error');return;}
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true;btn.textContent='Envoi en cours...';
-  try{
-    const r=await fetch('/api/reservations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
-    if(r.ok){
-      showN('✓ Réservation envoyée ! Nous vous contactons sous 30 minutes.','success');
-      ['f-prenom','f-nom','f-tel','f-email','f-msg','f-start','f-end'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('f-vehicle').value='';
-    } else {
-      showN('Erreur lors de l\'envoi. Contactez-nous directement.','error');
-    }
-  }catch(e){showN('Erreur réseau. Vérifiez votre connexion.','error');}
-  btn.disabled=false;btn.textContent='Confirmer la Réservation →';
-}
+  // Inject CSS
+  let styleEl = document.getElementById('editor-inject-css');
+  if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'editor-inject-css'; document.head.appendChild(styleEl); }
+  styleEl.textContent = css || '';
 
-function showN(m,t){
-  const n=document.getElementById('notif');
-  n.textContent=m;n.className='notif '+t;n.style.display='block';
-  setTimeout(()=>{n.style.display='none';},7000);
-}
+  // Fonts
+  if (fonts && fonts.length) {
+    const fontUrl = `https://fonts.googleapis.com/css2?family=${fonts.map(f=>f.replace(/ /g,'+')+':wght@400;700;900').join('&family=')}&display=swap`;
+    let linkEl = document.getElementById('editor-fonts');
+    if (!linkEl) { linkEl = document.createElement('link'); linkEl.id = 'editor-fonts'; linkEl.rel = 'stylesheet'; document.head.appendChild(linkEl); }
+    linkEl.href = fontUrl;
+  }
 
-loadVehicles();
+  if (!content) return;
+
+  // Hero
+  const s = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.textContent = val; };
+  const sa = (id, attr, val) => { const el = document.getElementById(id); if (el && val !== undefined) el[attr] = val; };
+
+  s('hero-t1', content.hero?.title1);
+  s('hero-t2', content.hero?.title2);
+  s('hero-sub-text', content.hero?.sub);
+  s('hero-badge-text', content.hero?.badge);
+  s('hero-btn1-text', content.hero?.btn1);
+  s('hero-btn2-text', content.hero?.btn2);
+
+  // Stats
+  s('stat-s1-label', content.stats?.s1label);
+  s('stat-s2-label', content.stats?.s2label);
+  s('stat-s2-val', content.stats?.s2val);
+  s('stat-s4-val', content.stats?.s4val);
+
+  // Services
+  s('srv-section-title', content.srvTitle);
+  if (content.services) {
+    content.services.forEach((srv, i) => {
+      s(`srv-icon-${i}`, srv.icon);
+      s(`srv-name-${i}`, srv.name);
+      s(`srv-desc-${i}`, srv.desc);
+    });
+  }
+
+  // Contact / footer
+  s('ct-phone-text', content.contact?.phone);
+  s('ct-email-text', content.contact?.email);
+  s('ct-insta-text', content.contact?.insta);
+  s('ct-addr-text', content.contact?.addr);
+  s('ct-tagline-text', content.contact?.tagline);
+
+  // Nav
+  s('nav-logo1-text', content.nav?.logo1);
+  s('nav-logo2-text', content.nav?.logo2);
+  s('nav-cta-text', content.nav?.cta);
+});
 </script>
 </body>
 </html>

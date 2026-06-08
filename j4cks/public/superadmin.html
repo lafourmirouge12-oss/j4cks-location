@@ -149,15 +149,19 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   <div class="sidebar-logo">
     <a href="/"><span>J4</span>CK'S LOCATION</a>
     <div class="sidebar-role">// SUPER ADMIN ⚡</div>
+    <a href="/" target="_blank" style="display:inline-block;margin-top:0.6rem;font-family:'Orbitron',monospace;font-size:0.52rem;letter-spacing:0.15em;color:var(--muted);border:1px solid rgba(255,255,255,0.08);padding:0.3rem 0.6rem;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='var(--muted)'">↗ VOIR LE SITE</a>
   </div>
   <nav class="side-nav">
+    <div class="nav-section">Site</div>
+    <div class="nav-item" onclick="window.location='/editor'"><span>🎨</span> Éditeur de Site</div>
     <div class="nav-section">Supervision</div>
     <div class="nav-item active" onclick="goPage('dashboard',this)"><span>📊</span> Vue Globale</div>
     <div class="nav-item" onclick="goPage('reservations',this)"><span>📅</span> Toutes Réservations</div>
     <div class="nav-item" onclick="goPage('vehicles',this)"><span>🚗</span> Flotte Complète</div>
     <div class="nav-item" onclick="goPage('contracts',this)"><span>📄</span> Tous les Contrats</div>
     <div class="nav-section">Administration</div>
-    <div class="nav-item" onclick="goPage('config',this)"><span>⚙️</span> Configuration</div>
+    <div class="nav-item" onclick="goPage('accounts',this)"><span>👥</span> Comptes Clients</div>
+    <div class="nav-item" onclick="goPage('config',this)"><span>⚙️</span> Features & Config</div>
     <div class="nav-item" onclick="goPage('export',this)"><span>📦</span> Export / Backup</div>
     <div class="nav-section">IA</div>
     <div class="nav-item" onclick="goPage('ai',this)"><span>🤖</span> Assistant IA</div>
@@ -219,16 +223,51 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     </div>
   </div>
 
-  <!-- FLOTTE -->
+  <!-- FLOTTE COMPLÈTE -->
   <div class="page" id="page-vehicles">
     <div class="page-header">
       <div><div class="page-tag">// SUPERVISION</div><div class="page-title">Flotte Complète</div></div>
+      <button class="btn btn-orange" onclick="openVehModal()">+ Ajouter un véhicule</button>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Modèle</th><th>Marque</th><th>Plaque</th><th>Km</th><th>Prix/j</th><th>Statut</th></tr></thead>
+        <thead><tr><th>Photo</th><th>Modèle</th><th>Marque</th><th>Couleur</th><th>Plaque</th><th>Prix/j</th><th>Statut</th><th>Actions</th></tr></thead>
         <tbody id="v-list"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- MODAL VÉHICULE SUPERADMIN -->
+  <div class="modal-overlay" id="veh-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;">
+    <div style="background:var(--black2);border:1px solid rgba(255,140,0,0.3);width:100%;max-width:560px;position:relative;margin:auto;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--red),transparent);"></div>
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,140,0,0.15);display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;color:#fff;" id="veh-modal-title">// AJOUTER UN VÉHICULE</div>
+        <button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;" onclick="closeVehModal()">✕</button>
+      </div>
+      <div style="padding:1.5rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+          <div class="f-group"><label class="f-label">Marque</label><input class="f-input" id="vm-brand" placeholder="Renault"></div>
+          <div class="f-group"><label class="f-label">Modèle</label><input class="f-input" id="vm-model" placeholder="Clio 5 Alpine"></div>
+          <div class="f-group"><label class="f-label">Année</label><input class="f-input" id="vm-year" type="number" placeholder="2024"></div>
+          <div class="f-group"><label class="f-label">Couleur</label><input class="f-input" id="vm-color" placeholder="Noir"></div>
+          <div class="f-group"><label class="f-label">Puissance</label><input class="f-input" id="vm-power" placeholder="200 ch"></div>
+          <div class="f-group"><label class="f-label">Transmission</label><input class="f-input" id="vm-trans" placeholder="EDC 7"></div>
+          <div class="f-group"><label class="f-label">Places</label><input class="f-input" id="vm-seats" type="number" placeholder="5"></div>
+          <div class="f-group"><label class="f-label">Prix / jour (€)</label><input class="f-input" id="vm-price" type="number" placeholder="79"></div>
+          <div class="f-group"><label class="f-label">Kilométrage</label><input class="f-input" id="vm-km" placeholder="5000 km"></div>
+          <div class="f-group"><label class="f-label">Immatriculation</label><input class="f-input" id="vm-plate" placeholder="XX-000-XX"></div>
+        </div>
+        <div class="f-group" style="margin-top:0.5rem;"><label class="f-label">URL Photo</label><input class="f-input" id="vm-image" placeholder="https://..."></div>
+        <div class="f-group" style="margin-top:0.5rem;"><label class="f-label">Statut</label>
+          <select class="f-select" id="vm-status"><option value="available">Disponible</option><option value="unavailable">Indisponible</option></select>
+        </div>
+        <div class="f-group" style="margin-top:0.5rem;"><label class="f-label">Description</label><textarea class="f-textarea" id="vm-desc" placeholder="Options, équipements..."></textarea></div>
+      </div>
+      <div style="padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:0.8rem;justify-content:flex-end;">
+        <button class="btn btn-outline" onclick="closeVehModal()">Annuler</button>
+        <button class="btn btn-orange" onclick="saveVehicle()">Sauvegarder →</button>
+      </div>
     </div>
   </div>
 
@@ -294,7 +333,90 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     </div>
   </div>
 
-  <!-- EXPORT -->
+  <!-- COMPTES CLIENTS -->
+  <div class="page" id="page-accounts">
+    <div class="page-header">
+      <div><div class="page-tag">// ADMINISTRATION</div><div class="page-title">Comptes Clients</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Inscrit le</th><th>Action</th></tr></thead>
+        <tbody id="accounts-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONFIG FEATURES -->
+  <div class="page" id="page-config">
+    <div class="page-header">
+      <div><div class="page-tag">// SUPER ADMIN — CONTRÔLE TOTAL</div><div class="page-title">Configuration</div></div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">// Fonctionnalités (toi seul décides)</div></div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:0.8rem;">
+            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Si tu désactives une option ici, l'admin ne peut pas la réactiver.</div>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Comptes clients (espace perso)</span>
+              <input type="checkbox" class="feat-toggle" data-key="clientAccounts" id="feat-clientAccounts" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option livraison à domicile</span>
+              <input type="checkbox" class="feat-toggle" data-key="delivery" id="feat-delivery" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option GPS portable</span>
+              <input type="checkbox" class="feat-toggle" data-key="gps" id="feat-gps" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option assurance renforcée</span>
+              <input type="checkbox" class="feat-toggle" data-key="insurance" id="feat-insurance" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option chauffeur privé</span>
+              <input type="checkbox" class="feat-toggle" data-key="chauffeur" id="feat-chauffeur" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Avis clients</span>
+              <input type="checkbox" class="feat-toggle" data-key="reviews" id="feat-reviews" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Newsletter</span>
+              <input type="checkbox" class="feat-toggle" data-key="newsletter" id="feat-newsletter" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <button class="btn btn-orange" style="margin-top:0.5rem;" onclick="saveFeatures()">Sauvegarder les fonctionnalités →</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">// Informations Agence</div></div>
+          <div class="panel-body">
+            <div class="f-group"><label class="f-label">Nom agence</label><input class="f-input" id="cfg-name" placeholder="J4CK'S Location"></div>
+            <div class="f-group"><label class="f-label">Téléphone</label><input class="f-input" id="cfg-phone" placeholder="+33 6 00 00 00 00"></div>
+            <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="cfg-email" placeholder="contact@j4cks.fr"></div>
+            <div class="f-group"><label class="f-label">Adresse</label><input class="f-input" id="cfg-address" placeholder="Mulhouse, France"></div>
+            <div class="f-group"><label class="f-label">Instagram</label><input class="f-input" id="cfg-instagram" placeholder="@j4cks.location"></div>
+            <div class="f-group"><label class="f-label">WhatsApp</label><input class="f-input" id="cfg-whatsapp" placeholder="+33 6 00 00 00 00"></div>
+            <div class="grid-2">
+              <div class="f-group"><label class="f-label">Âge minimum (ans)</label><input class="f-input" id="cfg-minAge" type="number" placeholder="19"></div>
+              <div class="f-group"><label class="f-label">Caution (€)</label><input class="f-input" id="cfg-depositAmount" type="number" placeholder="800"></div>
+            </div>
+            <button class="btn btn-orange" onclick="saveAgency()">Sauvegarder →</button>
+          </div>
+        </div>
+        <div class="danger-zone" style="margin-top:1rem;">
+          <div class="danger-title">// ZONE DANGEREUSE</div>
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">Actions irréversibles.</div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <button class="btn btn-red" onclick="confirmAction('Supprimer TOUTES les réservations ?',resetReservations)">🗑 Réinitialiser réservations</button>
+            <button class="btn btn-red" onclick="confirmAction('Supprimer TOUS les contrats ?',resetContracts)">🗑 Réinitialiser contrats</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="page" id="page-export">
     <div class="page-header">
       <div><div class="page-tag">// ADMINISTRATION</div><div class="page-title">Export & Backup</div></div>
@@ -328,7 +450,8 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <div class="msg ai"><div class="ai-label">// J4CK'S IA — MODE SUPER ADMIN</div>Bienvenue Super Administrateur. J'ai accès à toutes les données de l'agence. Je peux générer des rapports, analyser les performances, et vous aider à prendre les meilleures décisions. Que voulez-vous savoir ?</div>
       </div>
       <div style="padding:0.85rem;border-top:1px solid rgba(255,140,0,0.2);display:flex;gap:0.6rem;">
-        <input style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.65rem 0.85rem;font-family:'Rajdhani',sans-serif;font-size:0.95rem;outline:none;min-width:0;border-radius:0;transition:border-color 0.2s;" id="chat-input" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <label style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);cursor:pointer;transition:all 0.2s;flex-shrink:0;font-size:1rem;" title="Importer photo / fichier" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'">📎<input type="file" accept="image/*,.pdf,.txt,.json,.csv" style="display:none" onchange="handleFile(this)"></label>
+        <input style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.65rem 0.85rem;font-family:'Rajdhani',sans-serif;font-size:0.95rem;outline:none;min-width:0;border-radius:0;transition:border-color 0.2s;" id="chat-input" placeholder="Message ou importez un fichier..." onkeydown="if(event.key==='Enter')sendMsg()">
         <button class="btn btn-orange" onclick="sendMsg()">→</button>
       </div>
     </div>
@@ -385,11 +508,17 @@ function goPage(p,el){
   document.getElementById('page-'+p).classList.add('active');
   if(el)el.classList.add('active');
   closeSidebar();
-  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:loadVehicles,contracts:loadContracts,export:loadExport};
+  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:()=>{loadVehicles();renderVehList();},contracts:loadContracts,export:loadExport,accounts:loadAccounts,config:loadFeatures};
   if(map[p])map[p]();
 }
 
-function loadAll(){loadDashboard();loadReservations();loadVehicles();loadContracts();}
+function loadAll(){
+  loadDashboard();
+  loadReservations();
+  loadVehicles();
+  loadContracts();
+  loadFeatures();
+}
 
 async function loadDashboard(){
   try{
@@ -422,13 +551,92 @@ async function changeStatus(id,status){
   loadReservations();loadDashboard();toast('Statut mis à jour','success');
 }
 
+let vehicles=[], editVehId=null;
+
 async function loadVehicles(){
-  try{
-    const v=await(await fetch('/api/vehicles')).json();
-    document.getElementById('v-list').innerHTML=v.length
-      ?v.map(x=>`<tr><td><strong>${x.model||'—'}</strong></td><td>${x.brand||'—'}</td><td style="font-family:monospace;font-size:0.82rem">${x.plate||'—'}</td><td>${x.km||'—'}</td><td><strong>${x.pricePerDay||'—'}€</strong></td><td><span class="badge ${x.status||'available'}">${x.status||'available'}</span></td></tr>`).join('')
-      :'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Aucun véhicule</td></tr>';
-  }catch(e){}
+  try{vehicles=await(await fetch('/api/vehicles')).json();}catch(e){}
+  renderVehList();
+}
+
+function renderVehList(){
+  document.getElementById('v-list').innerHTML=vehicles.length
+    ?vehicles.map(v=>`<tr>
+      <td>${v.image?`<img src="${v.image}" style="width:50px;height:36px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);" onerror="this.style.display='none'" alt="">`:'—'}</td>
+      <td><strong>${v.model||'—'}</strong></td>
+      <td>${v.brand||'—'}</td>
+      <td>${v.color||'—'}</td>
+      <td style="font-family:monospace;font-size:0.8rem">${v.plate||'—'}</td>
+      <td><strong>${v.pricePerDay||'—'}€</strong></td>
+      <td><span class="badge ${v.status||'available'}">${v.status==='unavailable'?'Indispo':'Dispo'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-outline btn-sm" onclick="editVehicle('${v.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="deleteVehicle('${v.id}')">🗑</button>
+      </td>
+    </tr>`).join('')
+    :'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;font-family:\'Orbitron\',monospace;font-size:0.65rem;">AUCUN VÉHICULE</td></tr>';
+}
+
+function openVehModal(){
+  editVehId=null;
+  document.getElementById('veh-modal-title').textContent='// AJOUTER UN VÉHICULE';
+  ['brand','model','year','color','power','trans','seats','price','km','plate','image','desc'].forEach(k=>{const el=document.getElementById('vm-'+k);if(el)el.value='';});
+  document.getElementById('vm-status').value='available';
+  document.getElementById('veh-modal').style.display='flex';
+}
+
+function editVehicle(id){
+  const v=vehicles.find(x=>x.id===id);if(!v)return;
+  editVehId=id;
+  document.getElementById('veh-modal-title').textContent='// MODIFIER — '+v.model;
+  document.getElementById('vm-brand').value=v.brand||'';
+  document.getElementById('vm-model').value=v.model||'';
+  document.getElementById('vm-year').value=v.year||'';
+  document.getElementById('vm-color').value=v.color||'';
+  document.getElementById('vm-power').value=v.power||'';
+  document.getElementById('vm-trans').value=v.transmission||'';
+  document.getElementById('vm-seats').value=v.seats||'';
+  document.getElementById('vm-price').value=v.pricePerDay||'';
+  document.getElementById('vm-km').value=v.km||'';
+  document.getElementById('vm-plate').value=v.plate||'';
+  document.getElementById('vm-image').value=v.image||'';
+  document.getElementById('vm-status').value=v.status||'available';
+  document.getElementById('vm-desc').value=v.description||'';
+  document.getElementById('veh-modal').style.display='flex';
+}
+
+function closeVehModal(){document.getElementById('veh-modal').style.display='none';}
+
+async function saveVehicle(){
+  const data={
+    brand:document.getElementById('vm-brand').value,
+    model:document.getElementById('vm-model').value,
+    year:document.getElementById('vm-year').value,
+    color:document.getElementById('vm-color').value,
+    power:document.getElementById('vm-power').value,
+    transmission:document.getElementById('vm-trans').value,
+    seats:document.getElementById('vm-seats').value,
+    pricePerDay:document.getElementById('vm-price').value,
+    km:document.getElementById('vm-km').value,
+    plate:document.getElementById('vm-plate').value,
+    image:document.getElementById('vm-image').value,
+    status:document.getElementById('vm-status').value,
+    description:document.getElementById('vm-desc').value
+  };
+  const url=editVehId?`/api/vehicles/${editVehId}`:'/api/vehicles';
+  const method=editVehId?'PUT':'POST';
+  await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeVehModal();
+  await loadVehicles();
+  loadDashboard();
+  toast('Véhicule sauvegardé ✓','success');
+}
+
+async function deleteVehicle(id){
+  if(!confirm('Supprimer ce véhicule ?'))return;
+  await fetch('/api/vehicles/'+id,{method:'DELETE'});
+  await loadVehicles();
+  loadDashboard();
+  toast('Véhicule supprimé','success');
 }
 
 async function loadContracts(){
@@ -497,6 +705,31 @@ async function resetContracts(){
 
 function confirmAction(msg,fn){if(confirm(msg))fn();}
 
+// FILE IMPORT
+function handleFile(input){
+  const file=input.files[0];if(!file)return;
+  const isImage=file.type.startsWith('image/');
+  const msgs=document.getElementById('chat-msgs');
+  if(isImage){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const div=document.createElement('div');div.className='msg user';
+      div.innerHTML=`<div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.3rem">📎 ${file.name}</div><img src="${e.target.result}" style="max-width:200px;max-height:140px;object-fit:cover;border:1px solid rgba(255,140,0,0.3);">`;
+      msgs.appendChild(div);msgs.scrollTop=99999;
+      document.getElementById('chat-input').value=`Photo importée : ${file.name}. Analyse et dis-moi ce que tu en penses pour l'agence.`;
+    };
+    reader.readAsDataURL(file);
+  }else{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      addMsg(`📎 Fichier : ${file.name}`,'user');
+      document.getElementById('chat-input').value=`Fichier "${file.name}" : ${e.target.result.slice(0,3000)}. Analyse et conseille-moi.`;
+    };
+    reader.readAsText(file);
+  }
+  input.value='';
+}
+
 // IA
 let isTyping=false;
 async function sendMsg(){
@@ -525,6 +758,65 @@ function addMsg(text,role){
 function copyText(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('Copié !','success'));}
 function printEl(id){const w=window.open('','_blank');w.document.write('<pre style="font-family:Arial;font-size:12px;padding:2rem;white-space:pre-wrap;">'+document.getElementById(id).textContent+'</pre>');w.print();}
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',4000);}
+
+// COMPTES
+async function loadAccounts(){
+  try{
+    const accounts=await(await fetch('/api/clients')).json();
+    document.getElementById('accounts-list').innerHTML=accounts.length
+      ?accounts.map(a=>`<tr>
+        <td><strong>${a.prenom} ${a.nom}</strong></td>
+        <td>${a.email}</td>
+        <td>${a.tel||'—'}</td>
+        <td style="font-size:0.75rem;color:var(--muted)">${a.createdAt?new Date(a.createdAt).toLocaleDateString('fr-FR'):'—'}</td>
+        <td><button class="btn btn-red btn-sm" onclick="deleteClient('${a.id}')">🗑</button></td>
+      </tr>`).join('')
+      :'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem;font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.2em;">AUCUN COMPTE CLIENT</td></tr>';
+  }catch(e){}
+}
+async function deleteClient(id){
+  if(!confirm('Supprimer ce client ?'))return;
+  await fetch('/api/clients/'+id,{method:'DELETE'});
+  loadAccounts();toast('Client supprimé','success');
+}
+function openAccountModal(){document.getElementById('acc-modal').style.display='flex';}
+function closeAccModal(){document.getElementById('acc-modal').style.display='none';}
+
+// FEATURES CONFIG
+async function loadFeatures(){
+  try{
+    const r=await(await fetch('/api/config')).json();
+    const feats=r.features||{};
+    Object.keys(feats).forEach(k=>{
+      const el=document.getElementById('feat-'+k);
+      if(el)el.checked=feats[k];
+    });
+    const ag=r.agency||{};
+    Object.keys(ag).forEach(k=>{
+      const el=document.getElementById('cfg-'+k);
+      if(el)el.value=ag[k];
+    });
+  }catch(e){}
+}
+async function saveFeatures(){
+  const feats={};
+  document.querySelectorAll('.feat-toggle').forEach(el=>{
+    feats[el.dataset.key]=el.checked;
+  });
+  try{
+    await fetch('/api/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({features:feats})});
+    toast('Fonctionnalités sauvegardées ✓','success');
+  }catch(e){toast('Erreur','error');}
+}
+async function saveAgency(){
+  const fields=['name','phone','email','address','instagram','whatsapp','minAge','depositAmount'];
+  const agency={};
+  fields.forEach(k=>{const el=document.getElementById('cfg-'+k);if(el)agency[k]=el.value;});
+  try{
+    await fetch('/api/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({agency})});
+    toast('Infos agence sauvegardées ✓','success');
+  }catch(e){toast('Erreur','error');}
+}
 
 checkSession();
 </script>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>J4CK'S — Mon Espace</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e00020;--black:#050505;--black2:#0d0d0d;--panel:#111;--border:rgba(224,0,32,0.2);--text:#f0f0f0;--muted:#777;--green:#00c850;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.007) 3px,rgba(255,255,255,0.007) 4px);pointer-events:none;z-index:9999;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px;background:rgba(5,5,5,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1rem;color:#fff;text-decoration:none;}
+.logo span{color:var(--red);}
+.nav-right{display:flex;align-items:center;gap:0.8rem;}
+.nav-btn{font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.45rem 0.9rem;cursor:pointer;text-decoration:none;transition:all 0.2s;border:none;}
+.nav-btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);}
+.nav-btn-outline:hover{border-color:var(--red);color:var(--red);}
+.nav-btn-red{background:var(--red);color:#fff;}
+.nav-btn-red:hover{background:#c00018;}
+
+/* AUTH SCREENS */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 1rem 2rem;}
+.auth-box{background:var(--panel);border:1px solid var(--border);padding:2.5rem;width:100%;max-width:420px;position:relative;}
+.auth-box::before{content:'';position:absolute;top:-1px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),transparent);}
+.auth-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.2rem;color:#fff;text-align:center;margin-bottom:0.3rem;}
+.auth-logo span{color:var(--red);}
+.auth-sub{font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.4em;color:var(--muted);text-align:center;margin-bottom:2rem;}
+.auth-tabs{display:flex;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,0.07);}
+.auth-tab{flex:1;text-align:center;padding:0.7rem;font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.auth-tab.active{color:#fff;border-bottom-color:var(--red);}
+.f-group{margin-bottom:0.9rem;}
+.f-label{display:block;font-family:'Orbitron',monospace;font-size:0.52rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem;}
+.f-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.7rem 0.9rem;font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0;}
+.f-input:focus{border-color:var(--red);}
+.btn-full{width:100%;font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#fff;background:var(--red);border:none;padding:0.9rem;cursor:pointer;transition:background 0.2s;margin-top:0.5rem;}
+.btn-full:hover{background:#c00018;}
+.auth-msg{font-size:0.82rem;text-align:center;margin-top:0.8rem;padding:0.6rem;display:none;}
+.auth-msg.err{background:rgba(224,0,32,0.1);color:var(--red);border:1px solid rgba(224,0,32,0.2);}
+.auth-msg.ok{background:rgba(0,200,80,0.1);color:var(--green);border:1px solid rgba(0,200,80,0.2);}
+
+/* DASHBOARD CLIENT */
+.dashboard{display:none;padding:80px 1.5rem 3rem;max-width:1000px;margin:0 auto;}
+.welcome-bar{background:var(--panel);border:1px solid var(--border);padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;position:relative;overflow:hidden;}
+.welcome-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),transparent);}
+.welcome-name{font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:#fff;}
+.welcome-name span{color:var(--red);}
+.welcome-sub{font-size:0.82rem;color:var(--muted);margin-top:0.2rem;}
+.btn-logout{font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(255,255,255,0.1);background:transparent;padding:0.4rem 0.8rem;cursor:pointer;transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+.dash-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:1.5rem;}
+.dash-tab{font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.7rem 1.2rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;}
+.dash-tab.active{color:#fff;border-bottom-color:var(--red);}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+
+/* RÉSERVATION CLIENT */
+.section-label{font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.4em;color:var(--red);text-transform:uppercase;margin-bottom:1rem;display:block;}
+.vehicles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.v-card{background:var(--panel);border:1px solid rgba(255,255,255,0.07);padding:0;overflow:hidden;cursor:pointer;transition:all 0.25s;position:relative;}
+.v-card:hover{border-color:rgba(224,0,32,0.4);transform:translateY(-2px);}
+.v-card.selected{border-color:var(--red);background:rgba(224,0,32,0.05);}
+.v-card.selected::before{content:'✓';position:absolute;top:0.6rem;right:0.6rem;background:var(--red);color:#fff;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-family:'Orbitron',monospace;z-index:1;}
+.v-card img{width:100%;height:140px;object-fit:cover;}
+.v-card-no-img{width:100%;height:140px;background:#111;display:flex;align-items:center;justify-content:center;font-size:2.5rem;opacity:0.25;}
+.v-card-body{padding:1rem;}
+.v-card-name{font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;color:#fff;margin-bottom:0.2rem;}
+.v-card-brand{font-size:0.75rem;color:var(--muted);margin-bottom:0.7rem;}
+.v-card-price{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:var(--red);}
+.v-card-price span{font-size:0.65rem;color:var(--muted);}
+
+.book-form{background:var(--panel);border:1px solid var(--border);padding:1.5rem;position:relative;}
+.book-form::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),transparent);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
+.opts-title{font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.35em;color:var(--red);text-transform:uppercase;margin:1rem 0 0.6rem;}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;}
+.opt-btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:var(--muted);padding:0.6rem 0.7rem;cursor:pointer;transition:all 0.2s;font-family:'Rajdhani',sans-serif;font-size:0.82rem;text-align:left;width:100%;display:flex;flex-direction:column;gap:0.1rem;}
+.opt-btn:hover{border-color:rgba(224,0,32,0.35);color:#fff;}
+.opt-btn.on{border-color:var(--red);background:rgba(224,0,32,0.1);color:#fff;}
+.opt-name{font-weight:600;}
+.opt-price{font-family:'Orbitron',monospace;font-size:0.62rem;color:var(--red);}
+.price-recap{background:rgba(224,0,32,0.06);border:1px solid rgba(224,0,32,0.15);padding:0.85rem 1rem;margin-bottom:0.8rem;font-family:'Orbitron',monospace;font-size:0.7rem;line-height:1.8;display:none;}
+.price-total{font-size:0.9rem;color:var(--red);}
+.cgv-wrap{margin-bottom:1rem;}
+.cgv-line{display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:var(--muted);margin-bottom:0.5rem;}
+.cgv-line input{accent-color:var(--red);margin-top:2px;flex-shrink:0;}
+.age-banner{background:rgba(224,0,32,0.07);border-left:3px solid var(--red);padding:0.7rem 0.9rem;font-size:0.85rem;color:#ccc;margin-bottom:1rem;}
+.age-banner strong{color:var(--red);}
+
+/* HISTORIQUE */
+.resas-list{display:flex;flex-direction:column;gap:0.8rem;}
+.resa-card{background:var(--panel);border:1px solid rgba(255,255,255,0.07);padding:1.2rem;position:relative;}
+.resa-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.resa-card.pending::before{background:rgba(255,140,0,0.6);}
+.resa-card.confirmed::before{background:rgba(0,200,80,0.6);}
+.resa-card.cancelled::before{background:rgba(224,0,32,0.6);}
+.resa-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.6rem;}
+.resa-veh{font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;color:#fff;}
+.badge{display:inline-block;font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.1em;padding:0.22rem 0.55rem;text-transform:uppercase;}
+.badge.pending{background:rgba(255,140,0,0.15);color:#ff8c00;border:1px solid rgba(255,140,0,0.3);}
+.badge.confirmed{background:rgba(0,200,80,0.15);color:var(--green);border:1px solid rgba(0,200,80,0.3);}
+.badge.cancelled{background:rgba(224,0,32,0.15);color:var(--red);border:1px solid rgba(224,0,32,0.3);}
+.resa-dates{font-size:0.85rem;color:var(--muted);}
+.resa-opts{font-size:0.78rem;color:#aaa;margin-top:0.4rem;}
+.resa-price{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--red);margin-top:0.4rem;}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.25em;}
+
+/* PROFIL */
+.profile-card{background:var(--panel);border:1px solid var(--border);padding:1.5rem;}
+.profile-card::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--red),transparent);margin:-1.5rem -1.5rem 1.5rem;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;left:1.5rem;max-width:340px;margin-left:auto;background:var(--panel);border:1px solid var(--border);padding:0.85rem 1.2rem;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;z-index:9998;transform:translateY(120px);opacity:0;transition:all 0.3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,200,80,0.4);color:var(--green);}
+.toast.err{border-color:rgba(224,0,32,0.4);color:var(--red);}
+
+@media(max-width:600px){
+  .form-row,.opts-grid{grid-template-columns:1fr;}
+  .vehicles-grid{grid-template-columns:1fr;}
+  .dash-tabs{overflow-x:auto;}
+  .dashboard{padding:70px 1rem 2rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/"><span>J4</span>CK'S LOCATION</a>
+  <div class="nav-right" id="nav-right">
+    <a href="/" class="nav-btn nav-btn-outline">← Accueil</a>
+  </div>
+</nav>
+
+<!-- AUTH -->
+<div class="auth-wrap" id="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo"><span>J4</span>CK'S LOCATION</div>
+    <div class="auth-sub">// MON ESPACE CLIENT</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login',this)">Connexion</button>
+      <button class="auth-tab" onclick="switchAuthTab('register',this)">Créer un compte</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="tab-login">
+      <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="l-email" type="email" placeholder="thomas@email.com" autocomplete="email"></div>
+      <div class="f-group"><label class="f-label">Mot de passe</label><input class="f-input" id="l-pwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-full" onclick="doLogin()">Se connecter →</button>
+      <div class="auth-msg" id="l-msg"></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="tab-register" style="display:none;">
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">Prénom</label><input class="f-input" id="r-prenom" placeholder="Thomas" autocomplete="given-name"></div>
+        <div class="f-group"><label class="f-label">Nom</label><input class="f-input" id="r-nom" placeholder="Martin" autocomplete="family-name"></div>
+      </div>
+      <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="r-email" type="email" placeholder="thomas@email.com" autocomplete="email"></div>
+      <div class="f-group"><label class="f-label">Téléphone</label><input class="f-input" id="r-tel" type="tel" placeholder="+33 6 00 00 00 00" autocomplete="tel"></div>
+      <div class="f-group"><label class="f-label">Mot de passe</label><input class="f-input" id="r-pwd" type="password" placeholder="Min. 6 caractères"></div>
+      <div class="f-group"><label class="f-label">Confirmer mot de passe</label><input class="f-input" id="r-pwd2" type="password" placeholder="Répète ton mot de passe" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn-full" onclick="doRegister()">Créer mon compte →</button>
+      <div class="auth-msg" id="r-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="welcome-bar">
+    <div>
+      <div class="welcome-name">Bonjour, <span id="client-name">—</span> 👋</div>
+      <div class="welcome-sub">Bienvenue dans votre espace J4CK'S Location</div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+  </div>
+
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="switchDash('book',this)">🚗 Réserver</button>
+    <button class="dash-tab" onclick="switchDash('history',this)">📅 Mes réservations</button>
+    <button class="dash-tab" onclick="switchDash('profile',this)">👤 Mon profil</button>
+  </div>
+
+  <!-- RÉSERVER -->
+  <div class="tab-panel active" id="tab-book">
+    <span class="section-label">// Choisissez votre véhicule</span>
+    <div class="vehicles-grid" id="client-vehicles">
+      <div style="color:var(--muted);font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.2em;">CHARGEMENT...</div>
+    </div>
+
+    <div class="book-form" id="book-form" style="display:none;">
+      <div style="font-family:'Orbitron',monospace;font-size:0.72rem;color:#fff;margin-bottom:1.2rem;" id="selected-veh-title">// RÉSERVATION</div>
+
+      <div class="age-banner">⚠️ Âge minimum : <strong>19 ans</strong> — Permis B valide depuis 2 ans</div>
+
+      <div class="form-row">
+        <div class="f-group"><label class="f-label">Date début</label><input class="f-input" id="b-start" type="date" onchange="calcTotal()"></div>
+        <div class="f-group"><label class="f-label">Date fin</label><input class="f-input" id="b-end" type="date" onchange="calcTotal()"></div>
+      </div>
+      <div class="f-group"><label class="f-label">Date de naissance</label><input class="f-input" id="b-dob" type="date" autocomplete="bday"></div>
+
+      <div id="options-wrap" style="display:none;">
+        <div class="opts-title">// Options & Extras</div>
+        <div class="opts-grid" id="opts-grid"></div>
+      </div>
+
+      <div class="price-recap" id="price-recap"></div>
+
+      <div class="f-group"><label class="f-label">Message (optionnel)</label>
+        <textarea class="f-input" id="b-msg" placeholder="Lieu de livraison, heure souhaitée..." style="min-height:70px;resize:vertical;"></textarea>
+      </div>
+
+      <div class="cgv-wrap">
+        <label class="cgv-line"><input type="checkbox" id="b-age"> Je certifie avoir <strong style="color:#fff;margin:0 3px;">19 ans minimum</strong> et un permis B valide depuis 2 ans</label>
+        <label class="cgv-line"><input type="checkbox" id="b-cgv"> J'accepte les conditions : véhicule rendu plein, caution requise, franchise en cas de dommage</label>
+      </div>
+
+      <button class="btn-full" id="book-btn" onclick="submitBook()">Confirmer la réservation →</button>
+      <div class="auth-msg" id="book-msg"></div>
+    </div>
+  </div>
+
+  <!-- HISTORIQUE -->
+  <div class="tab-panel" id="tab-history">
+    <span class="section-label">// Mes réservations</span>
+    <div class="resas-list" id="resas-list">
+      <div class="empty-state">CHARGEMENT...</div>
+    </div>
+  </div>
+
+  <!-- PROFIL -->
+  <div class="tab-panel" id="tab-profile">
+    <span class="section-label">// Mon profil</span>
+    <div class="profile-card">
+      <div class="f-group"><label class="f-label">Prénom</label><input class="f-input" id="p-prenom" readonly></div>
+      <div class="f-group"><label class="f-label">Nom</label><input class="f-input" id="p-nom" readonly></div>
+      <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="p-email" readonly></div>
+      <div class="f-group"><label class="f-label">Téléphone</label><input class="f-input" id="p-tel" readonly></div>
+      <div style="font-size:0.8rem;color:var(--muted);margin-top:1rem;">Pour modifier vos informations, contactez-nous directement.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let clientData=null, vehicles=[], selectedVehicleId=null, selectedOpts=new Set(), config={features:{},agency:{}};
+
+async function init(){
+  try{
+    const [cfgR, meR] = await Promise.all([fetch('/api/config'), fetch('/api/client/me')]);
+    config = await cfgR.json();
+    const me = await meR.json();
+    if(me.client){
+      clientData=me.client;
+      showDashboard();
+    }
+    if(!config.features.clientAccounts){
+      document.getElementById('auth-wrap').innerHTML=`<div style="text-align:center;padding:3rem;"><div style="font-family:'Orbitron',monospace;font-size:0.8rem;color:var(--red);margin-bottom:1rem;">// COMPTES CLIENTS DÉSACTIVÉS</div><p style="color:var(--muted);font-size:0.9rem;">Les comptes clients ne sont pas disponibles pour le moment.</p><a href="/" style="display:inline-block;margin-top:1.5rem;font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--red);text-decoration:none;border:1px solid var(--border);padding:0.6rem 1.2rem;">← Retour accueil</a></div>`;
+    }
+  }catch(e){}
+}
+
+function switchAuthTab(tab, el){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('tab-register').style.display=tab==='register'?'block':'none';
+}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pwd=document.getElementById('l-pwd').value;
+  const msg=document.getElementById('l-msg');
+  if(!email||!pwd){showMsg(msg,'Remplis tous les champs','err');return;}
+  try{
+    const r=await fetch('/api/client/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
+    const d=await r.json();
+    if(!r.ok){showMsg(msg,d.error||'Erreur','err');return;}
+    clientData=d.client;
+    showDashboard();
+    toast('Connexion réussie !','ok');
+  }catch(e){showMsg(msg,'Erreur réseau','err');}
+}
+
+async function doRegister(){
+  const prenom=document.getElementById('r-prenom').value.trim();
+  const nom=document.getElementById('r-nom').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const tel=document.getElementById('r-tel').value.trim();
+  const pwd=document.getElementById('r-pwd').value;
+  const pwd2=document.getElementById('r-pwd2').value;
+  const msg=document.getElementById('r-msg');
+  if(!prenom||!nom||!email||!pwd){showMsg(msg,'Remplis tous les champs','err');return;}
+  if(pwd!==pwd2){showMsg(msg,'Les mots de passe ne correspondent pas','err');return;}
+  if(pwd.length<6){showMsg(msg,'Mot de passe trop court (6 min)','err');return;}
+  try{
+    const r=await fetch('/api/client/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prenom,nom,email,tel,password:pwd})});
+    const d=await r.json();
+    if(!r.ok){showMsg(msg,d.error||'Erreur','err');return;}
+    clientData=d.client;
+    showDashboard();
+    toast('Compte créé ! Bienvenue 🎉','ok');
+  }catch(e){showMsg(msg,'Erreur réseau','err');}
+}
+
+async function doLogout(){
+  await fetch('/api/client/logout',{method:'POST'});
+  clientData=null;
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('auth-wrap').style.display='flex';
+}
+
+function showDashboard(){
+  document.getElementById('auth-wrap').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  document.getElementById('client-name').textContent=clientData.prenom;
+  document.getElementById('p-prenom').value=clientData.prenom;
+  document.getElementById('p-nom').value=clientData.nom;
+  document.getElementById('p-email').value=clientData.email;
+  document.getElementById('p-tel').value=clientData.tel||'—';
+  loadVehicles();
+  loadHistory();
+}
+
+function switchDash(tab, el){
+  document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='history')loadHistory();
+}
+
+async function loadVehicles(){
+  try{
+    vehicles=await(await fetch('/api/vehicles')).json();
+    const avail=vehicles.filter(v=>!v.status||v.status==='available');
+    const g=document.getElementById('client-vehicles');
+    if(!avail.length){g.innerHTML='<div class="empty-state">AUCUN VÉHICULE DISPONIBLE</div>';return;}
+    g.innerHTML=avail.map(v=>`
+      <div class="v-card" id="vc-${v.id}" onclick="selectVehicle('${v.id}')">
+        ${v.image?`<img src="${v.image}" alt="${v.model}" loading="lazy">`:`<div class="v-card-no-img">🚗</div>`}
+        <div class="v-card-body">
+          <div class="v-card-name">${v.model||'Véhicule'}</div>
+          <div class="v-card-brand">${v.brand||''} · ${v.year||2024} · ${v.color||''}</div>
+          <div class="v-card-price">${v.pricePerDay||79}€ <span>/ jour</span></div>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+function selectVehicle(id){
+  document.querySelectorAll('.v-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('vc-'+id)?.classList.add('selected');
+  selectedVehicleId=id;
+  selectedOpts.clear();
+  const v=vehicles.find(x=>x.id===id);
+  document.getElementById('selected-veh-title').textContent=`// RÉSERVATION — ${v?.model||''}`;
+  document.getElementById('book-form').style.display='block';
+  document.getElementById('book-form').scrollIntoView({behavior:'smooth',block:'nearest'});
+  buildOptions();
+  calcTotal();
+}
+
+// OPTIONS SELON CONFIG SUPER ADMIN
+const ALL_OPTIONS=[
+  {id:'livraison',feat:'delivery',name:'🚀 Livraison à domicile',price:20,perDay:false},
+  {id:'gps',feat:'gps',name:'📍 GPS portable',price:5,perDay:true},
+  {id:'assurance',feat:'insurance',name:'🛡️ Assurance franchise 0€',price:15,perDay:true},
+  {id:'conducteur2',feat:null,name:'👤 2ème conducteur',price:10,perDay:true},
+  {id:'nettoyage',feat:null,name:'✨ Nettoyage inclus',price:25,perDay:false},
+  {id:'retour24',feat:null,name:'🕐 Retour 24h/24',price:10,perDay:false},
+];
+
+function buildOptions(){
+  const feats=config.features||{};
+  const active=ALL_OPTIONS.filter(o=>!o.feat||feats[o.feat]!==false);
+  const wrap=document.getElementById('options-wrap');
+  const grid=document.getElementById('opts-grid');
+  if(!active.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  grid.innerHTML=active.map(o=>`
+    <button class="opt-btn" id="opt-${o.id}" onclick="toggleOpt('${o.id}')">
+      <span class="opt-name">${o.name}</span>
+      <span class="opt-price">${o.perDay?`+${o.price}€/j`:`+${o.price}€`}</span>
+    </button>`).join('');
+}
+
+function toggleOpt(id){
+  if(selectedOpts.has(id))selectedOpts.delete(id);
+  else selectedOpts.add(id);
+  document.getElementById('opt-'+id)?.classList.toggle('on',selectedOpts.has(id));
+  calcTotal();
+}
+
+function calcTotal(){
+  if(!selectedVehicleId)return null;
+  const v=vehicles.find(x=>x.id===selectedVehicleId);
+  const start=document.getElementById('b-start').value;
+  const end=document.getElementById('b-end').value;
+  const recap=document.getElementById('price-recap');
+  if(!v||!start||!end||start>=end){recap.style.display='none';return null;}
+  const days=Math.max(1,Math.round((new Date(end)-new Date(start))/(86400000)));
+  const base=(v.pricePerDay||79)*days;
+  let extras=0;
+  ALL_OPTIONS.forEach(o=>{
+    if(selectedOpts.has(o.id))extras+=o.perDay?o.price*days:o.price;
+  });
+  const total=base+extras;
+  recap.style.display='block';
+  recap.innerHTML=`${days} jour${days>1?'s':''} × ${v.pricePerDay||79}€ = ${base}€${extras?` + options ${extras}€`:''}<br><span class="price-total">TOTAL : ${total}€</span>`;
+  return {days,base,extras,total};
+}
+
+async function submitBook(){
+  if(!selectedVehicleId){toast('Sélectionne un véhicule','err');return;}
+  const start=document.getElementById('b-start').value;
+  const end=document.getElementById('b-end').value;
+  const dob=document.getElementById('b-dob').value;
+  const ageOk=document.getElementById('b-age').checked;
+  const cgvOk=document.getElementById('b-cgv').checked;
+  const msg=document.getElementById('book-msg');
+
+  if(!start||!end){showMsg(msg,'Choisis les dates','err');return;}
+  if(start>=end){showMsg(msg,'Date de fin invalide','err');return;}
+  if(!ageOk){showMsg(msg,'Certifie avoir 19 ans minimum','err');return;}
+  if(!cgvOk){showMsg(msg,'Accepte les conditions','err');return;}
+  if(dob){
+    const age=Math.floor((new Date()-new Date(dob))/(365.25*86400000));
+    if(age<19){showMsg(msg,'Tu dois avoir 19 ans minimum','err');return;}
+  }
+
+  const totals=calcTotal();
+  const v=vehicles.find(x=>x.id===selectedVehicleId);
+  const btn=document.getElementById('book-btn');
+  btn.disabled=true;btn.textContent='Envoi...';
+
+  try{
+    const r=await fetch('/api/reservations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      prenom:clientData.prenom,nom:clientData.nom,tel:clientData.tel,email:clientData.email,
+      vehicleId:selectedVehicleId,vehicleModel:v?.model,
+      startDate:start,endDate:end,dob,
+      options:Array.from(selectedOpts),
+      totalPrice:totals?.total,nbJours:totals?.days,
+      message:document.getElementById('b-msg').value.trim()
+    })});
+    if(r.ok){
+      showMsg(msg,'✓ Réservation envoyée ! On te rappelle sous 30 min.','ok');
+      document.getElementById('b-start').value='';
+      document.getElementById('b-end').value='';
+      document.getElementById('b-dob').value='';
+      document.getElementById('b-age').checked=false;
+      document.getElementById('b-cgv').checked=false;
+      document.getElementById('b-msg').value='';
+      selectedOpts.clear();
+      document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('on'));
+      document.getElementById('price-recap').style.display='none';
+      setTimeout(()=>{switchDash('history',document.querySelectorAll('.dash-tab')[1]);},2000);
+    }else{
+      const d=await r.json();
+      showMsg(msg,d.error||'Erreur','err');
+    }
+  }catch(e){showMsg(msg,'Erreur réseau','err');}
+  btn.disabled=false;btn.textContent='Confirmer la réservation →';
+}
+
+async function loadHistory(){
+  try{
+    const resas=await(await fetch('/api/client/reservations')).json();
+    const list=document.getElementById('resas-list');
+    if(!resas.length){list.innerHTML='<div class="empty-state">AUCUNE RÉSERVATION<br><br>Ta première location apparaîtra ici.</div>';return;}
+    list.innerHTML=resas.map(r=>{
+      const opts=Array.isArray(r.options)&&r.options.length?`Options : ${r.options.join(', ')}`:'';
+      return `<div class="resa-card ${r.status}">
+        <div class="resa-header">
+          <div class="resa-veh">${r.vehicleModel||r.vehicleId||'Véhicule'}</div>
+          <span class="badge ${r.status}">${r.status==='pending'?'En attente':r.status==='confirmed'?'Confirmée':'Annulée'}</span>
+        </div>
+        <div class="resa-dates">📅 ${r.startDate||'—'} → ${r.endDate||'—'} · ${r.nbJours||'?'} jour${(r.nbJours||1)>1?'s':''}</div>
+        ${opts?`<div class="resa-opts">${opts}</div>`:''}
+        ${r.totalPrice?`<div class="resa-price">${r.totalPrice}€</div>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+function showMsg(el,txt,type){el.textContent=txt;el.className='auth-msg '+type;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',3500);}
+
+init();
+</script>
+</body>
+</html>

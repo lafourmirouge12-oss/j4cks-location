@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J4CK'S — Éditeur de Site</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e00020;--black:#050505;--black2:#0d0d0d;--panel:#111;--border:rgba(224,0,32,0.2);--text:#f0f0f0;--muted:#666;--green:#00c850;--orange:#ff8c00;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--text);font-family:'Rajdhani',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{height:52px;background:var(--black2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;flex-shrink:0;gap:0.8rem;z-index:100;}
+.topbar-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:0.85rem;color:#fff;white-space:nowrap;}
+.topbar-logo span{color:var(--red);}
+.topbar-tabs{display:flex;gap:0.3rem;flex:1;justify-content:center;overflow-x:auto;}
+.tb-tab{font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.4rem 0.9rem;cursor:pointer;color:var(--muted);border:1px solid transparent;background:none;white-space:nowrap;transition:all 0.2s;}
+.tb-tab.active{color:#fff;border-color:var(--border);background:rgba(224,0,32,0.08);}
+.tb-tab:hover{color:#fff;}
+.topbar-actions{display:flex;gap:0.5rem;flex-shrink:0;}
+.btn-save{font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.45rem 1rem;cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap;}
+.btn-save-pub{background:var(--red);color:#fff;}.btn-save-pub:hover{background:#c00018;}
+.btn-save-out{background:transparent;border:1px solid var(--border);color:var(--muted);}.btn-save-out:hover{border-color:var(--red);color:var(--red);}
+
+/* LAYOUT */
+.editor-body{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR PANELS */
+.sidebar{width:300px;background:var(--black2);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;}
+.panel-section{border-bottom:1px solid rgba(255,255,255,0.05);}
+.panel-section-title{font-family:'Orbitron',monospace;font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);padding:0.9rem 1rem 0.4rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.panel-section-title::after{content:'▾';font-size:0.7rem;transition:transform 0.2s;}
+.panel-section-title.closed::after{transform:rotate(-90deg);}
+.panel-section-body{padding:0.8rem 1rem 1rem;}
+.panel-section-body.hidden{display:none;}
+
+/* CONTROLS */
+.ctrl{margin-bottom:0.8rem;}
+.ctrl-label{font-family:'Orbitron',monospace;font-size:0.52rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.35rem;}
+.ctrl-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.55rem 0.7rem;font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;-webkit-appearance:none;border-radius:0;}
+.ctrl-input:focus{border-color:var(--red);}
+.ctrl-select{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.55rem 0.7rem;font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;-webkit-appearance:none;border-radius:0;}
+.ctrl-color{display:flex;gap:0.5rem;align-items:center;}
+.ctrl-color input[type=color]{width:36px;height:32px;border:none;background:none;cursor:pointer;padding:0;}
+.ctrl-color .ctrl-input{flex:1;}
+.ctrl-range{width:100%;accent-color:var(--red);}
+.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;}
+.ctrl-toggle{display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0;cursor:pointer;}
+.ctrl-toggle span{font-size:0.85rem;color:#ccc;}
+.toggle-switch{width:36px;height:20px;background:rgba(255,255,255,0.1);border-radius:10px;position:relative;transition:background 0.2s;flex-shrink:0;}
+.toggle-switch.on{background:var(--red);}
+.toggle-switch::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left 0.2s;}
+.toggle-switch.on::after{left:19px;}
+
+/* VEHICLE CARDS IN EDITOR */
+.veh-list{display:flex;flex-direction:column;gap:0.5rem;}
+.veh-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);padding:0.7rem;display:flex;align-items:center;gap:0.6rem;}
+.veh-thumb{width:50px;height:36px;object-fit:cover;background:#111;flex-shrink:0;border:1px solid rgba(255,255,255,0.06);}
+.veh-info{flex:1;min-width:0;}
+.veh-name{font-family:'Orbitron',monospace;font-size:0.65rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.veh-price{font-size:0.72rem;color:var(--red);}
+.veh-actions{display:flex;gap:0.3rem;flex-shrink:0;}
+.btn-xs{font-family:'Orbitron',monospace;font-size:0.5rem;padding:0.25rem 0.5rem;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-xs-edit{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid rgba(255,255,255,0.08);}.btn-xs-edit:hover{color:#fff;}
+.btn-xs-del{background:rgba(224,0,32,0.12);color:var(--red);border:1px solid rgba(224,0,32,0.2);}.btn-xs-del:hover{background:var(--red);color:#fff;}
+.btn-add-veh{width:100%;font-family:'Orbitron',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);border:1px dashed rgba(224,0,32,0.3);background:transparent;padding:0.6rem;cursor:pointer;margin-top:0.6rem;transition:all 0.2s;}
+.btn-add-veh:hover{background:rgba(224,0,32,0.07);}
+
+/* PREVIEW */
+.preview-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.preview-bar{height:36px;background:#0a0a0a;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;flex-shrink:0;}
+.preview-url{font-size:0.75rem;color:var(--muted);font-family:monospace;}
+.preview-device-btns{display:flex;gap:0.3rem;}
+.dev-btn{background:none;border:1px solid rgba(255,255,255,0.08);color:var(--muted);padding:0.2rem 0.5rem;cursor:pointer;font-size:0.7rem;transition:all 0.2s;}
+.dev-btn.active,.dev-btn:hover{border-color:var(--red);color:var(--red);}
+.preview-frame-wrap{flex:1;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:1rem;background:#000;}
+#preview-frame{border:none;transition:width 0.3s;background:#fff;}
+.preview-frame-wrap.desktop #preview-frame{width:100%;height:calc(100vh - 140px);}
+.preview-frame-wrap.tablet #preview-frame{width:768px;height:calc(100vh - 140px);}
+.preview-frame-wrap.mobile #preview-frame{width:390px;height:calc(100vh - 140px);}
+
+/* MODAL VÉHICULE */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--black2);border:1px solid var(--border);width:100%;max-width:520px;max-height:85vh;overflow-y:auto;position:relative;}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),transparent);}
+.modal-head{padding:1rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;}
+.modal-head-title{font-family:'Orbitron',monospace;font-size:0.8rem;color:#fff;}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0.2rem;}.modal-close:hover{color:var(--red);}
+.modal-body{padding:1.2rem;}
+.modal-foot{padding:0.8rem 1.2rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:0.6rem;justify-content:flex-end;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--panel);border:1px solid var(--border);padding:0.75rem 1.1rem;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;max-width:300px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,200,80,0.4);color:var(--green);}
+.toast.err{border-color:rgba(224,0,32,0.4);color:var(--red);}
+
+@media(max-width:768px){
+  .sidebar{width:260px;}
+  .topbar-tabs{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo"><span>J4</span>CK'S <span style="color:var(--muted);font-size:0.7rem;">// ÉDITEUR</span></div>
+  <div class="topbar-tabs">
+    <button class="tb-tab active" onclick="switchTab('design',this)">🎨 Design</button>
+    <button class="tb-tab" onclick="switchTab('hero',this)">🏠 Hero</button>
+    <button class="tb-tab" onclick="switchTab('vehicles',this)">🚗 Véhicules</button>
+    <button class="tb-tab" onclick="switchTab('services',this)">⚡ Services</button>
+    <button class="tb-tab" onclick="switchTab('contact',this)">📍 Contact</button>
+    <button class="tb-tab" onclick="switchTab('nav',this)">🔗 Navigation</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-save btn-save-out" onclick="saveAndPreview()">↺ Aperçu</button>
+    <button class="btn-save btn-save-pub" onclick="publishSite()">✓ Publier</button>
+    <button class="btn-save btn-save-out" onclick="window.location='/admin'">← Admin</button>
+  </div>
+</div>
+
+<div class="editor-body">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+
+    <!-- DESIGN -->
+    <div class="panel-section" id="tab-design">
+      <div class="panel-section-title" onclick="toggleSection(this)">Couleurs</div>
+      <div class="panel-section-body">
+        <div class="ctrl"><label class="ctrl-label">Couleur principale</label>
+          <div class="ctrl-color"><input type="color" id="c-primary" value="#e00020" oninput="liveUpdate()"><input class="ctrl-input" id="c-primary-hex" value="#e00020" oninput="syncColor('primary')"></div>
+        </div>
+        <div class="ctrl"><label class="ctrl-label">Fond principal</label>
+          <div class="ctrl-color"><input type="color" id="c-bg" value="#050505" oninput="liveUpdate()"><input class="ctrl-input" id="c-bg-hex" value="#050505" oninput="syncColor('bg')"></div>
+        </div>
+        <div class="ctrl"><label class="ctrl-label">Fond secondaire</label>
+          <div class="ctrl-color"><input type="color" id="c-bg2" value="#0d0d0d" oninput="liveUpdate()"><input class="ctrl-input" id="c-bg2-hex" value="#0d0d0d" oninput="syncColor('bg2')"></div>
+        </div>
+        <div class="ctrl"><label class="ctrl-label">Texte</label>
+          <div class="ctrl-color"><input type="color" id="c-text" value="#f0f0f0" oninput="liveUpdate()"><input class="ctrl-input" id="c-text-hex" value="#f0f0f0" oninput="syncColor('text')"></div>
+        </div>
+      </div>
+      <div class="panel-section-title" onclick="toggleSection(this)">Typographie</div>
+      <div class="panel-section-body">
+        <div class="ctrl"><label class="ctrl-label">Police titres</label>
+          <select class="ctrl-select" id="font-title" onchange="liveUpdate()">
+            <option value="Orbitron">Orbitron (défaut)</option>
+            <option value="Rajdhani">Rajdhani</option>
+            <option value="Inter">Inter</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Bebas Neue">Bebas Neue</option>
+            <option value="Exo 2">Exo 2</option>
+          </select>
+        </div>
+        <div class="ctrl"><label class="ctrl-label">Police texte</label>
+          <select class="ctrl-select" id="font-body" onchange="liveUpdate()">
+            <option value="Rajdhani">Rajdhani (défaut)</option>
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Open Sans">Open Sans</option>
+          </select>
+        </div>
+        <div class="ctrl"><label class="ctrl-label">Taille texte base</label>
+          <input type="range" class="ctrl-range" id="font-size" min="14" max="20" value="16" oninput="document.getElementById('font-size-val').textContent=this.value+'px';liveUpdate()">
+          <span id="font-size-val" style="font-size:0.72rem;color:var(--muted);">16px</span>
+        </div>
+      </div>
+      <div class="panel-section-title" onclick="toggleSection(this)">Effets</div>
+      <div class="panel-section-body">
+        <label class="ctrl-toggle" onclick="toggleFeature('scanlines')">
+          <span>Scanlines holographiques</span><div class="toggle-switch on" id="tog-scanlines"></div>
+        </label>
+        <label class="ctrl-toggle" onclick="toggleFeature('grid')">
+          <span>Grille animée hero</span><div class="toggle-switch on" id="tog-grid"></div>
+        </label>
+        <label class="ctrl-toggle" onclick="toggleFeature('corners')">
+          <span>Coins décoratifs</span><div class="toggle-switch on" id="tog-corners"></div>
+        </label>
+        <div class="ctrl" style="margin-top:0.6rem;"><label class="ctrl-label">Bordure rouge (intensité)</label>
+          <input type="range" class="ctrl-range" id="border-opacity" min="0" max="100" value="25" oninput="liveUpdate()">
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="panel-section" id="tab-hero" style="display:none;">
+      <div class="panel-section-title" onclick="toggleSection(this)">Textes Hero</div>
+      <div class="panel-section-body">
+        <div class="ctrl"><label class="ctrl-label">Titre ligne 1</label><input class="ctrl-input" id="hero-title1" value="J4CK'S" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Titre ligne 2 (accent)</label><input class="ctrl-input" id="hero-title2" value="LOCATION" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Sous-titre</label><input class="ctrl-input" id="hero-sub" value="Conduisez l'exception · Vivez le prestige" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Badge (texte petit en haut)</label><input class="ctrl-input" id="hero-badge" value="Agence de Location Prestige — Mulhouse" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Bouton principal</label><input class="ctrl-input" id="hero-btn1" value="Explorer la Flotte" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Bouton secondaire</label><input class="ctrl-input" id="hero-btn2" value="Réserver Maintenant" oninput="liveUpdate()"></div>
+      </div>
+      <div class="panel-section-title" onclick="toggleSection(this)">Stats bar</div>
+      <div class="panel-section-body">
+        <div class="ctrl-row">
+          <div class="ctrl"><label class="ctrl-label">Stat 1 label</label><input class="ctrl-input" id="stat1-label" value="Véhicules Dispo" oninput="liveUpdate()"></div>
+          <div class="ctrl"><label class="ctrl-label">Stat 2 label</label><input class="ctrl-input" id="stat2-label" value="Note Moyenne" oninput="liveUpdate()"></div>
+        </div>
+        <div class="ctrl-row">
+          <div class="ctrl"><label class="ctrl-label">Stat 2 valeur</label><input class="ctrl-input" id="stat2-val" value="4.9★" oninput="liveUpdate()"></div>
+          <div class="ctrl"><label class="ctrl-label">Stat 4 valeur</label><input class="ctrl-input" id="stat4-val" value="100%" oninput="liveUpdate()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VÉHICULES -->
+    <div class="panel-section" id="tab-vehicles" style="display:none;">
+      <div class="panel-section-title" onclick="toggleSection(this)">Gérer la Flotte</div>
+      <div class="panel-section-body">
+        <div class="veh-list" id="editor-veh-list"><div style="color:var(--muted);font-size:0.78rem;">Chargement...</div></div>
+        <button class="btn-add-veh" onclick="openVehModal()">+ Ajouter un véhicule</button>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="panel-section" id="tab-services" style="display:none;">
+      <div class="panel-section-title" onclick="toggleSection(this)">Titre section</div>
+      <div class="panel-section-body">
+        <div class="ctrl"><label class="ctrl-label">Titre</label><input class="ctrl-input" id="srv-title" value="Ce Que Nous Offrons" oninput="liveUpdate()"></div>
+      </div>
+      <div class="panel-section-title" onclick="toggleSection(this)">Services (icône · nom · desc)</div>
+      <div class="panel-section-body" id="services-fields">
+        <!-- généré dynamiquement -->
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="panel-section" id="tab-contact" style="display:none;">
+      <div class="panel-section-title" onclick="toggleSection(this)">Infos de contact</div>
+      <div class="panel-section-body">
+        <div class="ctrl"><label class="ctrl-label">Téléphone</label><input class="ctrl-input" id="ct-phone" value="+33 6 XX XX XX XX" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Email</label><input class="ctrl-input" id="ct-email" value="contact@j4cks.fr" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Instagram</label><input class="ctrl-input" id="ct-insta" value="@j4cks.location" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Adresse</label><input class="ctrl-input" id="ct-addr" value="Mulhouse, France" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Tagline footer</label><input class="ctrl-input" id="ct-tagline" value="L'agence de location premium de Mulhouse." oninput="liveUpdate()"></div>
+      </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="panel-section" id="tab-nav" style="display:none;">
+      <div class="panel-section-title" onclick="toggleSection(this)">Logo & Nav</div>
+      <div class="panel-section-body">
+        <div class="ctrl"><label class="ctrl-label">Nom logo (partie rouge)</label><input class="ctrl-input" id="nav-logo1" value="J4" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Nom logo (suite)</label><input class="ctrl-input" id="nav-logo2" value="CK'S LOCATION" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Texte bouton CTA</label><input class="ctrl-input" id="nav-cta" value="Réserver" oninput="liveUpdate()"></div>
+        <label class="ctrl-toggle" onclick="toggleFeature('showMonEspace')">
+          <span>Afficher "Mon Espace"</span><div class="toggle-switch on" id="tog-showMonEspace"></div>
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-wrap">
+    <div class="preview-bar">
+      <span class="preview-url">j4cks-location.onrender.com</span>
+      <div class="preview-device-btns">
+        <button class="dev-btn active" onclick="setDevice('desktop',this)">🖥 Desktop</button>
+        <button class="dev-btn" onclick="setDevice('tablet',this)">📱 Tablet</button>
+        <button class="dev-btn" onclick="setDevice('mobile',this)">📲 Mobile</button>
+      </div>
+    </div>
+    <div class="preview-frame-wrap desktop" id="frame-wrap">
+      <iframe id="preview-frame" src="/"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VÉHICULE -->
+<div class="modal-bg" id="veh-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-title" id="veh-modal-title">// AJOUTER UN VÉHICULE</div>
+      <button class="modal-close" onclick="closeVehModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="ctrl"><label class="ctrl-label">Marque</label><input class="ctrl-input" id="vm-brand" placeholder="Renault"></div>
+        <div class="ctrl"><label class="ctrl-label">Modèle</label><input class="ctrl-input" id="vm-model" placeholder="Clio 5 Alpine"></div>
+        <div class="ctrl"><label class="ctrl-label">Année</label><input class="ctrl-input" id="vm-year" type="number" placeholder="2024"></div>
+        <div class="ctrl"><label class="ctrl-label">Couleur</label><input class="ctrl-input" id="vm-color" placeholder="Noir"></div>
+        <div class="ctrl"><label class="ctrl-label">Puissance</label><input class="ctrl-input" id="vm-power" placeholder="200 ch"></div>
+        <div class="ctrl"><label class="ctrl-label">Transmission</label><input class="ctrl-input" id="vm-trans" placeholder="EDC 7"></div>
+        <div class="ctrl"><label class="ctrl-label">Places</label><input class="ctrl-input" id="vm-seats" type="number" placeholder="5"></div>
+        <div class="ctrl"><label class="ctrl-label">Prix / jour (€)</label><input class="ctrl-input" id="vm-price" type="number" placeholder="79"></div>
+        <div class="ctrl"><label class="ctrl-label">Kilométrage</label><input class="ctrl-input" id="vm-km" placeholder="5000 km"></div>
+        <div class="ctrl"><label class="ctrl-label">Immatriculation</label><input class="ctrl-input" id="vm-plate" placeholder="XX-000-XX"></div>
+      </div>
+      <div class="ctrl"><label class="ctrl-label">URL Photo</label><input class="ctrl-input" id="vm-image" placeholder="https://..."></div>
+      <div class="ctrl" style="margin-top:0.5rem;"><label class="ctrl-label">Statut</label>
+        <select class="ctrl-select" id="vm-status">
+          <option value="available">Disponible</option>
+          <option value="unavailable">Indisponible</option>
+        </select>
+      </div>
+      <div class="ctrl"><label class="ctrl-label">Description / options</label><textarea class="ctrl-input" id="vm-desc" placeholder="Toit ouvrant, caméra de recul..." style="min-height:70px;resize:vertical;"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-save btn-save-out" onclick="closeVehModal()">Annuler</button>
+      <button class="btn-save btn-save-pub" onclick="saveVehicle()">Sauvegarder →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let editVehId=null, vehicles=[], features={scanlines:true,grid:true,corners:true,showMonEspace:true};
+let debounceTimer=null;
+
+const SERVICES_DEFAULT=[
+  {icon:'🚀',name:'Livraison',desc:'Véhicule livré à votre adresse.'},
+  {icon:'🛡️',name:'Assurance',desc:'Tous risques inclus.'},
+  {icon:'⚡',name:'Express',desc:'Confirmation en 30 min.'},
+  {icon:'💰',name:'Tarifs Clairs',desc:'Aucun frais caché.'},
+  {icon:'📍',name:'GPS',desc:'Véhicules connectés.'},
+  {icon:'🌙',name:'Support 24/7',desc:'Disponible à toute heure.'},
+];
+
+// INIT
+async function init(){
+  await checkAuth();
+  await loadVehicles();
+  buildServicesFields();
+  loadSavedConfig();
+  refreshPreview();
+}
+
+async function checkAuth(){
+  try{
+    const r=await fetch('/api/me');
+    const d=await r.json();
+    if(!d.role){window.location='/admin';}
+  }catch(e){window.location='/admin';}
+}
+
+function switchTab(tab,el){
+  document.querySelectorAll('.panel-section[id^="tab-"]').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display='block';
+  el.classList.add('active');
+  if(tab==='vehicles')renderVehicleList();
+}
+
+function toggleSection(el){
+  el.classList.toggle('closed');
+  const body=el.nextElementSibling;
+  body.classList.toggle('hidden');
+}
+
+// LIVE UPDATE — debounced
+function liveUpdate(){
+  clearTimeout(debounceTimer);
+  debounceTimer=setTimeout(()=>refreshPreview(),300);
+}
+
+function toggleFeature(key){
+  features[key]=!features[key];
+  const tog=document.getElementById('tog-'+key);
+  if(tog)tog.classList.toggle('on',features[key]);
+  liveUpdate();
+}
+
+function syncColor(key){
+  const hex=document.getElementById('c-'+key+'-hex').value;
+  const picker=document.getElementById('c-'+key);
+  if(picker&&/^#[0-9a-f]{6}$/i.test(hex)){picker.value=hex;liveUpdate();}
+}
+
+// BUILD CSS FROM CONTROLS
+function buildCSS(){
+  const primary=document.getElementById('c-primary').value;
+  const bg=document.getElementById('c-bg').value;
+  const bg2=document.getElementById('c-bg2').value;
+  const textC=document.getElementById('c-text').value;
+  const fontTitle=document.getElementById('font-title').value;
+  const fontBody=document.getElementById('font-body').value;
+  const fontSize=document.getElementById('font-size').value;
+  const borderOp=document.getElementById('border-opacity').value/100;
+
+  return `
+    :root{
+      --red:${primary};
+      --black:${bg};
+      --black2:${bg2};
+      --text:${textC};
+      --border-red:rgba(${hexToRgb(primary)},${borderOp});
+    }
+    body{font-family:'${fontBody}',sans-serif;font-size:${fontSize}px;}
+    .logo,.hero-title,.section-title,.stat-number,.car-name,.service-name,.form-title,.footer-logo{font-family:'${fontTitle}',monospace!important;}
+    ${!features.scanlines?'body::before{display:none!important;}':''}
+    ${!features.grid?'.hero-grid{display:none!important;}':''}
+    ${!features.corners?'.hero-corner{display:none!important;}':''}
+    ${!features.showMonEspace?'.nav-espace{display:none!important;}':''}
+  `;
+}
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16);
+  const g=parseInt(hex.slice(3,5),16);
+  const b=parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// BUILD CONTENT OVERRIDES
+function buildContent(){
+  return {
+    hero:{
+      title1:document.getElementById('hero-title1').value,
+      title2:document.getElementById('hero-title2').value,
+      sub:document.getElementById('hero-sub').value,
+      badge:document.getElementById('hero-badge').value,
+      btn1:document.getElementById('hero-btn1').value,
+      btn2:document.getElementById('hero-btn2').value,
+    },
+    stats:{
+      s1label:document.getElementById('stat1-label').value,
+      s2label:document.getElementById('stat2-label').value,
+      s2val:document.getElementById('stat2-val').value,
+      s4val:document.getElementById('stat4-val').value,
+    },
+    contact:{
+      phone:document.getElementById('ct-phone').value,
+      email:document.getElementById('ct-email').value,
+      insta:document.getElementById('ct-insta').value,
+      addr:document.getElementById('ct-addr').value,
+      tagline:document.getElementById('ct-tagline').value,
+    },
+    nav:{
+      logo1:document.getElementById('nav-logo1').value,
+      logo2:document.getElementById('nav-logo2').value,
+      cta:document.getElementById('nav-cta').value,
+    },
+    services:getServicesData(),
+    srvTitle:document.getElementById('srv-title').value,
+  };
+}
+
+function getServicesData(){
+  const data=[];
+  for(let i=0;i<6;i++){
+    const icon=document.getElementById(`srv-icon-${i}`)?.value||'';
+    const name=document.getElementById(`srv-name-${i}`)?.value||'';
+    const desc=document.getElementById(`srv-desc-${i}`)?.value||'';
+    data.push({icon,name,desc});
+  }
+  return data;
+}
+
+function buildServicesFields(){
+  const wrap=document.getElementById('services-fields');
+  wrap.innerHTML=SERVICES_DEFAULT.map((s,i)=>`
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);padding:0.6rem;margin-bottom:0.5rem;">
+      <div class="ctrl-row" style="margin-bottom:0.4rem;">
+        <div class="ctrl"><label class="ctrl-label">Icône</label><input class="ctrl-input" id="srv-icon-${i}" value="${s.icon}" oninput="liveUpdate()"></div>
+        <div class="ctrl"><label class="ctrl-label">Nom</label><input class="ctrl-input" id="srv-name-${i}" value="${s.name}" oninput="liveUpdate()"></div>
+      </div>
+      <div class="ctrl"><label class="ctrl-label">Description</label><input class="ctrl-input" id="srv-desc-${i}" value="${s.desc}" oninput="liveUpdate()"></div>
+    </div>`).join('');
+}
+
+// PREVIEW via postMessage
+function refreshPreview(){
+  const frame=document.getElementById('preview-frame');
+  try{
+    frame.contentWindow.postMessage({
+      type:'EDITOR_UPDATE',
+      css:buildCSS(),
+      content:buildContent(),
+      fonts:[document.getElementById('font-title').value,document.getElementById('font-body').value]
+    },'*');
+  }catch(e){}
+}
+
+function setDevice(d,el){
+  document.querySelectorAll('.dev-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const wrap=document.getElementById('frame-wrap');
+  wrap.className='preview-frame-wrap '+d;
+}
+
+// VÉHICULES
+async function loadVehicles(){
+  try{vehicles=await(await fetch('/api/vehicles')).json();}catch(e){}
+  renderVehicleList();
+}
+
+function renderVehicleList(){
+  const list=document.getElementById('editor-veh-list');
+  if(!vehicles.length){list.innerHTML='<div style="color:var(--muted);font-size:0.78rem;text-align:center;padding:1rem;">Aucun véhicule</div>';return;}
+  list.innerHTML=vehicles.map(v=>`
+    <div class="veh-item">
+      ${v.image?`<img src="${v.image}" class="veh-thumb" alt="" onerror="this.style.display='none'">`:`<div class="veh-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;opacity:0.3;">🚗</div>`}
+      <div class="veh-info">
+        <div class="veh-name">${v.model||'—'} <span style="color:var(--muted);font-size:0.6rem;">${v.color||''}</span></div>
+        <div class="veh-price">${v.pricePerDay||79}€/j · <span style="color:var(--muted)">${v.status==='unavailable'?'Indispo':'Dispo'}</span></div>
+      </div>
+      <div class="veh-actions">
+        <button class="btn-xs btn-xs-edit" onclick="editVehicle('${v.id}')">✏️</button>
+        <button class="btn-xs btn-xs-del" onclick="deleteVehicle('${v.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openVehModal(){
+  editVehId=null;
+  document.getElementById('veh-modal-title').textContent='// AJOUTER UN VÉHICULE';
+  ['brand','model','year','color','power','trans','seats','price','km','plate','image','desc'].forEach(k=>document.getElementById('vm-'+k).value='');
+  document.getElementById('vm-status').value='available';
+  document.getElementById('veh-modal').classList.add('open');
+}
+
+function editVehicle(id){
+  const v=vehicles.find(x=>x.id===id);if(!v)return;
+  editVehId=id;
+  document.getElementById('veh-modal-title').textContent='// MODIFIER — '+v.model;
+  document.getElementById('vm-brand').value=v.brand||'';
+  document.getElementById('vm-model').value=v.model||'';
+  document.getElementById('vm-year').value=v.year||'';
+  document.getElementById('vm-color').value=v.color||'';
+  document.getElementById('vm-power').value=v.power||'';
+  document.getElementById('vm-trans').value=v.transmission||'';
+  document.getElementById('vm-seats').value=v.seats||'';
+  document.getElementById('vm-price').value=v.pricePerDay||'';
+  document.getElementById('vm-km').value=v.km||'';
+  document.getElementById('vm-plate').value=v.plate||'';
+  document.getElementById('vm-image').value=v.image||'';
+  document.getElementById('vm-status').value=v.status||'available';
+  document.getElementById('vm-desc').value=v.description||'';
+  document.getElementById('veh-modal').classList.add('open');
+}
+
+function closeVehModal(){document.getElementById('veh-modal').classList.remove('open');}
+
+async function saveVehicle(){
+  const data={
+    brand:document.getElementById('vm-brand').value,
+    model:document.getElementById('vm-model').value,
+    year:document.getElementById('vm-year').value,
+    color:document.getElementById('vm-color').value,
+    power:document.getElementById('vm-power').value,
+    transmission:document.getElementById('vm-trans').value,
+    seats:document.getElementById('vm-seats').value,
+    pricePerDay:document.getElementById('vm-price').value,
+    km:document.getElementById('vm-km').value,
+    plate:document.getElementById('vm-plate').value,
+    image:document.getElementById('vm-image').value,
+    status:document.getElementById('vm-status').value,
+    description:document.getElementById('vm-desc').value
+  };
+  const url=editVehId?`/api/vehicles/${editVehId}`:'/api/vehicles';
+  const method=editVehId?'PUT':'POST';
+  await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeVehModal();
+  await loadVehicles();
+  refreshPreview();
+  toast('Véhicule sauvegardé ✓','ok');
+}
+
+async function deleteVehicle(id){
+  if(!confirm('Supprimer ce véhicule ?'))return;
+  await fetch('/api/vehicles/'+id,{method:'DELETE'});
+  await loadVehicles();
+  refreshPreview();
+  toast('Véhicule supprimé','ok');
+}
+
+// SAVE CONFIG
+async function saveAndPreview(){
+  await saveConfig();
+  refreshPreview();
+}
+
+async function publishSite(){
+  const btn=document.querySelector('.btn-save-pub');
+  btn.textContent='⏳ Publication...';btn.disabled=true;
+  await saveConfig();
+  // Reload preview to apply saved config
+  const frame=document.getElementById('preview-frame');
+  frame.src='/';
+  frame.onload=()=>{
+    setTimeout(()=>refreshPreview(),500);
+  };
+  btn.textContent='✓ Publié !';
+  setTimeout(()=>{btn.textContent='✓ Publier';btn.disabled=false;},2000);
+}
+
+async function saveConfig(){
+  const cfg={
+    css:buildCSS(),
+    content:buildContent(),
+    features,
+    fonts:{title:document.getElementById('font-title').value,body:document.getElementById('font-body').value}
+  };
+  try{
+    await fetch('/api/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteConfig:cfg})});
+    localStorage.setItem('j4cks-editor-config',JSON.stringify(cfg));
+    toast('Sauvegardé ✓','ok');
+  }catch(e){toast('Erreur sauvegarde','err');}
+}
+
+function loadSavedConfig(){
+  try{
+    const saved=localStorage.getItem('j4cks-editor-config');
+    if(!saved)return;
+    const cfg=JSON.parse(saved);
+    if(cfg.features)features={...features,...cfg.features};
+    Object.keys(features).forEach(k=>{const t=document.getElementById('tog-'+k);if(t)t.classList.toggle('on',features[k]);});
+  }catch(e){}
+}
+
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',3000);}
+
+// COLOR PICKER SYNC
+document.querySelectorAll('input[type=color]').forEach(el=>{
+  el.addEventListener('input',()=>{
+    const key=el.id.replace('c-','');
+    const hexEl=document.getElementById('c-'+key+'-hex');
+    if(hexEl)hexEl.value=el.value;
+  });
+});
+
+init();
+</script>
+</body>
+</html>
