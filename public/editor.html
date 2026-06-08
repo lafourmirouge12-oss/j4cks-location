@@ -580,9 +580,17 @@ async function saveAndPreview(){
 }
 
 async function publishSite(){
+  const btn=document.querySelector('.btn-save-pub');
+  btn.textContent='⏳ Publication...';btn.disabled=true;
   await saveConfig();
-  toast('✓ Site publié !','ok');
-  setTimeout(()=>refreshPreview(),500);
+  // Reload preview to apply saved config
+  const frame=document.getElementById('preview-frame');
+  frame.src='/';
+  frame.onload=()=>{
+    setTimeout(()=>refreshPreview(),500);
+  };
+  btn.textContent='✓ Publié !';
+  setTimeout(()=>{btn.textContent='✓ Publier';btn.disabled=false;},2000);
 }
 
 async function saveConfig(){

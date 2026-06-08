@@ -223,16 +223,51 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     </div>
   </div>
 
-  <!-- FLOTTE -->
+  <!-- FLOTTE COMPLÈTE -->
   <div class="page" id="page-vehicles">
     <div class="page-header">
       <div><div class="page-tag">// SUPERVISION</div><div class="page-title">Flotte Complète</div></div>
+      <button class="btn btn-orange" onclick="openVehModal()">+ Ajouter un véhicule</button>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Modèle</th><th>Marque</th><th>Plaque</th><th>Km</th><th>Prix/j</th><th>Statut</th></tr></thead>
+        <thead><tr><th>Photo</th><th>Modèle</th><th>Marque</th><th>Couleur</th><th>Plaque</th><th>Prix/j</th><th>Statut</th><th>Actions</th></tr></thead>
         <tbody id="v-list"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- MODAL VÉHICULE SUPERADMIN -->
+  <div class="modal-overlay" id="veh-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;">
+    <div style="background:var(--black2);border:1px solid rgba(255,140,0,0.3);width:100%;max-width:560px;position:relative;margin:auto;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--red),transparent);"></div>
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,140,0,0.15);display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;color:#fff;" id="veh-modal-title">// AJOUTER UN VÉHICULE</div>
+        <button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;" onclick="closeVehModal()">✕</button>
+      </div>
+      <div style="padding:1.5rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+          <div class="f-group"><label class="f-label">Marque</label><input class="f-input" id="vm-brand" placeholder="Renault"></div>
+          <div class="f-group"><label class="f-label">Modèle</label><input class="f-input" id="vm-model" placeholder="Clio 5 Alpine"></div>
+          <div class="f-group"><label class="f-label">Année</label><input class="f-input" id="vm-year" type="number" placeholder="2024"></div>
+          <div class="f-group"><label class="f-label">Couleur</label><input class="f-input" id="vm-color" placeholder="Noir"></div>
+          <div class="f-group"><label class="f-label">Puissance</label><input class="f-input" id="vm-power" placeholder="200 ch"></div>
+          <div class="f-group"><label class="f-label">Transmission</label><input class="f-input" id="vm-trans" placeholder="EDC 7"></div>
+          <div class="f-group"><label class="f-label">Places</label><input class="f-input" id="vm-seats" type="number" placeholder="5"></div>
+          <div class="f-group"><label class="f-label">Prix / jour (€)</label><input class="f-input" id="vm-price" type="number" placeholder="79"></div>
+          <div class="f-group"><label class="f-label">Kilométrage</label><input class="f-input" id="vm-km" placeholder="5000 km"></div>
+          <div class="f-group"><label class="f-label">Immatriculation</label><input class="f-input" id="vm-plate" placeholder="XX-000-XX"></div>
+        </div>
+        <div class="f-group" style="margin-top:0.5rem;"><label class="f-label">URL Photo</label><input class="f-input" id="vm-image" placeholder="https://..."></div>
+        <div class="f-group" style="margin-top:0.5rem;"><label class="f-label">Statut</label>
+          <select class="f-select" id="vm-status"><option value="available">Disponible</option><option value="unavailable">Indisponible</option></select>
+        </div>
+        <div class="f-group" style="margin-top:0.5rem;"><label class="f-label">Description</label><textarea class="f-textarea" id="vm-desc" placeholder="Options, équipements..."></textarea></div>
+      </div>
+      <div style="padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:0.8rem;justify-content:flex-end;">
+        <button class="btn btn-outline" onclick="closeVehModal()">Annuler</button>
+        <button class="btn btn-orange" onclick="saveVehicle()">Sauvegarder →</button>
+      </div>
     </div>
   </div>
 
@@ -473,11 +508,17 @@ function goPage(p,el){
   document.getElementById('page-'+p).classList.add('active');
   if(el)el.classList.add('active');
   closeSidebar();
-  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:loadVehicles,contracts:loadContracts,export:loadExport,accounts:loadAccounts,config:loadFeatures};
+  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:()=>{loadVehicles();renderVehList();},contracts:loadContracts,export:loadExport,accounts:loadAccounts,config:loadFeatures};
   if(map[p])map[p]();
 }
 
-function loadAll(){loadDashboard();loadReservations();loadVehicles();loadContracts();loadFeatures();}
+function loadAll(){
+  loadDashboard();
+  loadReservations();
+  loadVehicles();
+  loadContracts();
+  loadFeatures();
+}
 
 async function loadDashboard(){
   try{
@@ -510,13 +551,92 @@ async function changeStatus(id,status){
   loadReservations();loadDashboard();toast('Statut mis à jour','success');
 }
 
+let vehicles=[], editVehId=null;
+
 async function loadVehicles(){
-  try{
-    const v=await(await fetch('/api/vehicles')).json();
-    document.getElementById('v-list').innerHTML=v.length
-      ?v.map(x=>`<tr><td><strong>${x.model||'—'}</strong></td><td>${x.brand||'—'}</td><td style="font-family:monospace;font-size:0.82rem">${x.plate||'—'}</td><td>${x.km||'—'}</td><td><strong>${x.pricePerDay||'—'}€</strong></td><td><span class="badge ${x.status||'available'}">${x.status||'available'}</span></td></tr>`).join('')
-      :'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Aucun véhicule</td></tr>';
-  }catch(e){}
+  try{vehicles=await(await fetch('/api/vehicles')).json();}catch(e){}
+  renderVehList();
+}
+
+function renderVehList(){
+  document.getElementById('v-list').innerHTML=vehicles.length
+    ?vehicles.map(v=>`<tr>
+      <td>${v.image?`<img src="${v.image}" style="width:50px;height:36px;object-fit:cover;border:1px solid rgba(255,255,255,0.08);" onerror="this.style.display='none'" alt="">`:'—'}</td>
+      <td><strong>${v.model||'—'}</strong></td>
+      <td>${v.brand||'—'}</td>
+      <td>${v.color||'—'}</td>
+      <td style="font-family:monospace;font-size:0.8rem">${v.plate||'—'}</td>
+      <td><strong>${v.pricePerDay||'—'}€</strong></td>
+      <td><span class="badge ${v.status||'available'}">${v.status==='unavailable'?'Indispo':'Dispo'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-outline btn-sm" onclick="editVehicle('${v.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="deleteVehicle('${v.id}')">🗑</button>
+      </td>
+    </tr>`).join('')
+    :'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;font-family:\'Orbitron\',monospace;font-size:0.65rem;">AUCUN VÉHICULE</td></tr>';
+}
+
+function openVehModal(){
+  editVehId=null;
+  document.getElementById('veh-modal-title').textContent='// AJOUTER UN VÉHICULE';
+  ['brand','model','year','color','power','trans','seats','price','km','plate','image','desc'].forEach(k=>{const el=document.getElementById('vm-'+k);if(el)el.value='';});
+  document.getElementById('vm-status').value='available';
+  document.getElementById('veh-modal').style.display='flex';
+}
+
+function editVehicle(id){
+  const v=vehicles.find(x=>x.id===id);if(!v)return;
+  editVehId=id;
+  document.getElementById('veh-modal-title').textContent='// MODIFIER — '+v.model;
+  document.getElementById('vm-brand').value=v.brand||'';
+  document.getElementById('vm-model').value=v.model||'';
+  document.getElementById('vm-year').value=v.year||'';
+  document.getElementById('vm-color').value=v.color||'';
+  document.getElementById('vm-power').value=v.power||'';
+  document.getElementById('vm-trans').value=v.transmission||'';
+  document.getElementById('vm-seats').value=v.seats||'';
+  document.getElementById('vm-price').value=v.pricePerDay||'';
+  document.getElementById('vm-km').value=v.km||'';
+  document.getElementById('vm-plate').value=v.plate||'';
+  document.getElementById('vm-image').value=v.image||'';
+  document.getElementById('vm-status').value=v.status||'available';
+  document.getElementById('vm-desc').value=v.description||'';
+  document.getElementById('veh-modal').style.display='flex';
+}
+
+function closeVehModal(){document.getElementById('veh-modal').style.display='none';}
+
+async function saveVehicle(){
+  const data={
+    brand:document.getElementById('vm-brand').value,
+    model:document.getElementById('vm-model').value,
+    year:document.getElementById('vm-year').value,
+    color:document.getElementById('vm-color').value,
+    power:document.getElementById('vm-power').value,
+    transmission:document.getElementById('vm-trans').value,
+    seats:document.getElementById('vm-seats').value,
+    pricePerDay:document.getElementById('vm-price').value,
+    km:document.getElementById('vm-km').value,
+    plate:document.getElementById('vm-plate').value,
+    image:document.getElementById('vm-image').value,
+    status:document.getElementById('vm-status').value,
+    description:document.getElementById('vm-desc').value
+  };
+  const url=editVehId?`/api/vehicles/${editVehId}`:'/api/vehicles';
+  const method=editVehId?'PUT':'POST';
+  await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeVehModal();
+  await loadVehicles();
+  loadDashboard();
+  toast('Véhicule sauvegardé ✓','success');
+}
+
+async function deleteVehicle(id){
+  if(!confirm('Supprimer ce véhicule ?'))return;
+  await fetch('/api/vehicles/'+id,{method:'DELETE'});
+  await loadVehicles();
+  loadDashboard();
+  toast('Véhicule supprimé','success');
 }
 
 async function loadContracts(){

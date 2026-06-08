@@ -225,6 +225,11 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <div class="stat-card"><span class="s-num" id="d-p">—</span><div class="s-label">En attente</div></div>
       <div class="stat-card"><span class="s-num" id="d-rev">—</span><div class="s-label">Revenus (€)</div></div>
     </div>
+    <!-- FEATURES RAPIDES -->
+    <div id="features-banner" style="display:none;background:var(--panel);border:1px solid var(--border);padding:1rem 1.5rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <span style="font-family:'Orbitron',monospace;font-size:0.55rem;letter-spacing:0.3em;color:var(--red);text-transform:uppercase;">// Fonctionnalités actives</span>
+      <div id="features-tags" style="display:flex;gap:0.5rem;flex-wrap:wrap;"></div>
+    </div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Client</th><th>Véhicule</th><th>Dates</th><th>Statut</th><th>Actions</th></tr></thead>
@@ -407,11 +412,24 @@ function loadAll(){loadDashboard();loadVehicles();loadReservations();loadContrac
 
 async function loadDashboard(){
   try{
-    const s=await(await fetch('/api/stats')).json();
+    const [s, cfg] = await Promise.all([
+      fetch('/api/stats').then(r=>r.json()),
+      fetch('/api/config').then(r=>r.json())
+    ]);
     document.getElementById('d-v').textContent=s.vehicles;
     document.getElementById('d-r').textContent=s.reservations;
     document.getElementById('d-p').textContent=s.pending;
     document.getElementById('d-rev').textContent=s.revenue+'€';
+    // Features banner
+    const feats=cfg.features||{};
+    const labels={clientAccounts:'Comptes clients',delivery:'Livraison',gps:'GPS',insurance:'Assurance',chauffeur:'Chauffeur',reviews:'Avis'};
+    const active=Object.entries(feats).filter(([k,v])=>v&&labels[k]);
+    const banner=document.getElementById('features-banner');
+    const tags=document.getElementById('features-tags');
+    if(active.length){
+      tags.innerHTML=active.map(([k])=>`<span style="font-family:'Orbitron',monospace;font-size:0.5rem;letter-spacing:0.1em;padding:0.2rem 0.6rem;background:rgba(0,200,80,0.1);border:1px solid rgba(0,200,80,0.25);color:#00c850;">${labels[k]}</span>`).join('');
+      banner.style.display='flex';
+    }
     const resas=await(await fetch('/api/reservations')).json();
     document.getElementById('d-resas').innerHTML=resas.length
       ?resas.slice(0,10).map(r=>`<tr><td>${r.prenom||''} ${r.nom||''}<br><small style="color:var(--muted)">${r.tel||''}</small></td><td>${r.vehicleId||'—'}</td><td>${r.startDate||'—'} → ${r.endDate||'—'}</td><td><span class="badge ${r.status}">${r.status}</span></td><td><button class="btn btn-green btn-sm" onclick="changeStatus('${r.id}','confirmed')">✓</button> <button class="btn btn-outline btn-sm" onclick="changeStatus('${r.id}','cancelled')">✗</button></td></tr>`).join('')
