@@ -114,10 +114,11 @@ app.get('/api/config', (req, res) => {
   // Le public voit seulement les features et infos agence (pas les secrets)
   res.json({ features: cfg.features, agency: cfg.agency });
 });
-app.put('/api/config', requireSuperAdmin, (req, res) => {
+app.put('/api/config', requireAdmin, (req, res) => {
   const cfg = loadCfg();
   if (req.body.features) cfg.features = { ...cfg.features, ...req.body.features };
   if (req.body.agency) cfg.agency = { ...cfg.agency, ...req.body.agency };
+  if (req.body.siteConfig) cfg.siteConfig = req.body.siteConfig;
   saveCfg(cfg);
   res.json({ ok: true, config: cfg });
 });
@@ -358,6 +359,10 @@ app.get('/api/export', requireSuperAdmin, (req, res) => {
 });
 
 // ═══ PAGES ═══
+app.get('/editor*', (req, res) => {
+  if (!req.session.role) return res.redirect('/admin');
+  res.sendFile(path.join(__dirname, 'public', 'editor.html'));
+});
 app.get('/client*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'client.html')));
 app.get('/admin*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/superadmin*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'superadmin.html')));

@@ -169,21 +169,21 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
   <div class="hero-corner tl"></div><div class="hero-corner tr"></div>
   <div class="hero-corner bl"></div><div class="hero-corner br"></div>
   <div class="hero-content">
-    <span class="hero-badge">// Agence de Location Prestige — Mulhouse</span>
-    <h1 class="hero-title">J4CK'S<br><span class="accent">LOCATION</span></h1>
-    <p class="hero-subtitle">Conduisez <strong>l'exception</strong> · Vivez <strong>le prestige</strong></p>
+    <span class="hero-badge" id="hero-badge-text">// Agence de Location Prestige — Mulhouse</span>
+    <h1 class="hero-title"><span id="hero-t1">J4CK'S</span><br><span class="accent" id="hero-t2">LOCATION</span></h1>
+    <p class="hero-subtitle" id="hero-sub-text">Conduisez <strong>l'exception</strong> · Vivez <strong>le prestige</strong></p>
     <div class="hero-actions">
-      <a href="#fleet" class="btn-primary">Explorer la Flotte</a>
-      <a href="#booking" class="btn-outline">Réserver Maintenant</a>
+      <a href="#fleet" class="btn-primary" id="hero-btn1-text">Explorer la Flotte</a>
+      <a href="#booking" class="btn-outline" id="hero-btn2-text">Réserver Maintenant</a>
     </div>
   </div>
 </section>
 
 <div class="stats-bar">
-  <div class="stat"><span class="stat-number" id="s-v">—</span><span class="stat-label">Véhicules Dispo</span></div>
-  <div class="stat"><span class="stat-number">4.9★</span><span class="stat-label">Note Moyenne</span></div>
+  <div class="stat"><span class="stat-number" id="s-v">—</span><span class="stat-label" id="stat-s1-label">Véhicules Dispo</span></div>
+  <div class="stat"><span class="stat-number" id="stat-s2-val">4.9★</span><span class="stat-label" id="stat-s2-label">Note Moyenne</span></div>
   <div class="stat"><span class="stat-number">24/7</span><span class="stat-label">Assistance</span></div>
-  <div class="stat"><span class="stat-number">100%</span><span class="stat-label">Premium</span></div>
+  <div class="stat"><span class="stat-number" id="stat-s4-val">100%</span><span class="stat-label">Premium</span></div>
 </div>
 
 <section class="fleet" id="fleet">
@@ -198,12 +198,12 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
   <span class="section-tag">// 02 — Services</span>
   <h2 class="section-title">Ce Que Nous Offrons</h2>
   <div class="services-grid">
-    <div class="service-item"><span class="service-icon">🚀</span><div class="service-name">Livraison</div><p class="service-desc">Véhicule livré à votre adresse.</p></div>
-    <div class="service-item"><span class="service-icon">🛡️</span><div class="service-name">Assurance</div><p class="service-desc">Tous risques inclus.</p></div>
-    <div class="service-item"><span class="service-icon">⚡</span><div class="service-name">Express</div><p class="service-desc">Confirmation en 30 min.</p></div>
-    <div class="service-item"><span class="service-icon">💰</span><div class="service-name">Tarifs Clairs</div><p class="service-desc">Aucun frais caché.</p></div>
-    <div class="service-item"><span class="service-icon">📍</span><div class="service-name">GPS</div><p class="service-desc">Véhicules connectés.</p></div>
-    <div class="service-item"><span class="service-icon">🌙</span><div class="service-name">Support 24/7</div><p class="service-desc">Disponible à toute heure.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-0">🚀</span><div class="service-name" id="srv-name-0">Livraison</div><p class="service-desc" id="srv-desc-0">Véhicule livré à votre adresse.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-1">🛡️</span><div class="service-name" id="srv-name-1">Assurance</div><p class="service-desc" id="srv-desc-1">Tous risques inclus.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-2">⚡</span><div class="service-name" id="srv-name-2">Express</div><p class="service-desc" id="srv-desc-2">Confirmation en 30 min.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-3">💰</span><div class="service-name" id="srv-name-3">Tarifs Clairs</div><p class="service-desc" id="srv-desc-3">Aucun frais caché.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-4">📍</span><div class="service-name" id="srv-name-4">GPS</div><p class="service-desc" id="srv-desc-4">Véhicules connectés.</p></div>
+    <div class="service-item"><span class="service-icon" id="srv-icon-5">🌙</span><div class="service-name" id="srv-name-5">Support 24/7</div><p class="service-desc" id="srv-desc-5">Disponible à toute heure.</p></div>
   </div>
 </section>
 
@@ -432,6 +432,66 @@ function showN(m,t){
 }
 
 loadVehicles();
+
+// ÉDITEUR — reçoit les mises à jour en temps réel
+window.addEventListener('message', e => {
+  if (!e.data || e.data.type !== 'EDITOR_UPDATE') return;
+  const {css, content, fonts} = e.data;
+
+  // Inject CSS
+  let styleEl = document.getElementById('editor-inject-css');
+  if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'editor-inject-css'; document.head.appendChild(styleEl); }
+  styleEl.textContent = css || '';
+
+  // Fonts
+  if (fonts && fonts.length) {
+    const fontUrl = `https://fonts.googleapis.com/css2?family=${fonts.map(f=>f.replace(/ /g,'+')+':wght@400;700;900').join('&family=')}&display=swap`;
+    let linkEl = document.getElementById('editor-fonts');
+    if (!linkEl) { linkEl = document.createElement('link'); linkEl.id = 'editor-fonts'; linkEl.rel = 'stylesheet'; document.head.appendChild(linkEl); }
+    linkEl.href = fontUrl;
+  }
+
+  if (!content) return;
+
+  // Hero
+  const s = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.textContent = val; };
+  const sa = (id, attr, val) => { const el = document.getElementById(id); if (el && val !== undefined) el[attr] = val; };
+
+  s('hero-t1', content.hero?.title1);
+  s('hero-t2', content.hero?.title2);
+  s('hero-sub-text', content.hero?.sub);
+  s('hero-badge-text', content.hero?.badge);
+  s('hero-btn1-text', content.hero?.btn1);
+  s('hero-btn2-text', content.hero?.btn2);
+
+  // Stats
+  s('stat-s1-label', content.stats?.s1label);
+  s('stat-s2-label', content.stats?.s2label);
+  s('stat-s2-val', content.stats?.s2val);
+  s('stat-s4-val', content.stats?.s4val);
+
+  // Services
+  s('srv-section-title', content.srvTitle);
+  if (content.services) {
+    content.services.forEach((srv, i) => {
+      s(`srv-icon-${i}`, srv.icon);
+      s(`srv-name-${i}`, srv.name);
+      s(`srv-desc-${i}`, srv.desc);
+    });
+  }
+
+  // Contact / footer
+  s('ct-phone-text', content.contact?.phone);
+  s('ct-email-text', content.contact?.email);
+  s('ct-insta-text', content.contact?.insta);
+  s('ct-addr-text', content.contact?.addr);
+  s('ct-tagline-text', content.contact?.tagline);
+
+  // Nav
+  s('nav-logo1-text', content.nav?.logo1);
+  s('nav-logo2-text', content.nav?.logo2);
+  s('nav-cta-text', content.nav?.cta);
+});
 </script>
 </body>
 </html>

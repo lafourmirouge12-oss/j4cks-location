@@ -152,6 +152,8 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <a href="/" target="_blank" style="display:inline-block;margin-top:0.6rem;font-family:'Orbitron',monospace;font-size:0.52rem;letter-spacing:0.15em;color:var(--muted);border:1px solid rgba(255,255,255,0.08);padding:0.3rem 0.6rem;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='var(--muted)'">↗ VOIR LE SITE</a>
   </div>
   <nav class="side-nav">
+    <div class="nav-section">Site</div>
+    <div class="nav-item" onclick="window.location='/editor'"><span>🎨</span> Éditeur de Site</div>
     <div class="nav-section">Supervision</div>
     <div class="nav-item active" onclick="goPage('dashboard',this)"><span>📊</span> Vue Globale</div>
     <div class="nav-item" onclick="goPage('reservations',this)"><span>📅</span> Toutes Réservations</div>
@@ -320,18 +322,34 @@ tr:hover td{background:rgba(255,255,255,0.02);}
           <div class="panel-header"><div class="panel-title">// Fonctionnalités (toi seul décides)</div></div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:0.8rem;">
             <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Si tu désactives une option ici, l'admin ne peut pas la réactiver.</div>
-            ${[
-              {key:'clientAccounts',label:'Comptes clients (espace perso)'},
-              {key:'delivery',label:'Option livraison à domicile'},
-              {key:'gps',label:'Option GPS portable'},
-              {key:'insurance',label:'Option assurance renforcée'},
-              {key:'chauffeur',label:'Option chauffeur privé'},
-              {key:'reviews',label:'Avis clients'},
-              {key:'newsletter',label:'Newsletter'},
-            ].map(f=>`<label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
-              <span style="font-size:0.88rem;color:#ccc;">${f.label}</span>
-              <input type="checkbox" class="feat-toggle" data-key="${f.key}" id="feat-${f.key}" style="accent-color:var(--orange);width:16px;height:16px;">
-            </label>`).join('')}
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Comptes clients (espace perso)</span>
+              <input type="checkbox" class="feat-toggle" data-key="clientAccounts" id="feat-clientAccounts" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option livraison à domicile</span>
+              <input type="checkbox" class="feat-toggle" data-key="delivery" id="feat-delivery" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option GPS portable</span>
+              <input type="checkbox" class="feat-toggle" data-key="gps" id="feat-gps" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option assurance renforcée</span>
+              <input type="checkbox" class="feat-toggle" data-key="insurance" id="feat-insurance" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Option chauffeur privé</span>
+              <input type="checkbox" class="feat-toggle" data-key="chauffeur" id="feat-chauffeur" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Avis clients</span>
+              <input type="checkbox" class="feat-toggle" data-key="reviews" id="feat-reviews" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:0.6rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+              <span style="font-size:0.88rem;color:#ccc;">Newsletter</span>
+              <input type="checkbox" class="feat-toggle" data-key="newsletter" id="feat-newsletter" style="accent-color:var(--orange);width:16px;height:16px;">
+            </label>
             <button class="btn btn-orange" style="margin-top:0.5rem;" onclick="saveFeatures()">Sauvegarder les fonctionnalités →</button>
           </div>
         </div>
