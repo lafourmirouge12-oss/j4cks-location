@@ -275,14 +275,12 @@ footer{background:var(--black2);border-top:1px solid rgba(224,0,32,0.2);padding:
 
 <script>
 const OPTIONS = [
-  {id:'plein',name:'🔋 Plein carburant',desc:'Rendu plein ou +40€',price:0,perDay:false},
-  {id:'livraison',name:'🚀 Livraison domicile',desc:'+20€',price:20,perDay:false},
-  {id:'conducteur2',name:'👤 2e conducteur',desc:'+10€/jour',price:10,perDay:true},
+  {id:'livraison',name:'🚀 Livraison à domicile',desc:'+20€',price:20,perDay:false},
+  {id:'conducteur2',name:'👤 2ème conducteur',desc:'+10€/jour',price:10,perDay:true},
   {id:'gps',name:'📍 GPS portable',desc:'+5€/jour',price:5,perDay:true},
-  {id:'siege',name:'🧒 Siège bébé',desc:'+8€/jour',price:8,perDay:true},
-  {id:'assurance',name:'🛡️ Assurance renforcée',desc:'Franchise 0€ · +15€/jour',price:15,perDay:true},
-  {id:'nettoyage',name:'✨ Nettoyage garanti',desc:'+25€',price:25,perDay:false},
-  {id:'retour24',name:'🕐 Retour 24h/24',desc:'Sans contrainte horaire · +10€',price:10,perDay:false},
+  {id:'assurance',name:'🛡️ Assurance franchise 0€',desc:'+15€/jour',price:15,perDay:true},
+  {id:'nettoyage',name:'✨ Nettoyage inclus',desc:'+25€',price:25,perDay:false},
+  {id:'retour24',name:'🕐 Retour 24h/24',desc:'+10€',price:10,perDay:false},
 ];
 
 let selectedOptions=new Set();
@@ -424,80 +422,6 @@ async function submitResa(){
       selectedOptions.clear();
     }else{showN("Erreur. Contacte-nous directement.",'error');}
   }catch(e){showN('Erreur réseau.','error');}
-  btn.disabled=false;btn.textContent='Confirmer la Réservation →';
-}
-
-function showN(m,t){
-  const n=document.getElementById('notif');
-  n.textContent=m;n.className='notif '+t;n.style.display='block';
-  setTimeout(()=>{n.style.display='none';},7000);
-}
-
-loadVehicles();
-</script>
-  try{
-    const v=await(await fetch('/api/vehicles')).json();
-    const avail=v.filter(x=>!x.status||x.status==='available');
-    document.getElementById('s-v').textContent=avail.length;
-    const g=document.getElementById('fleet-grid');
-    const s=document.getElementById('f-vehicle');
-    if(!v.length){
-      g.innerHTML='<div style="background:var(--black2);padding:3rem;text-align:center;color:var(--muted);font-family:Orbitron,monospace;font-size:0.7rem;grid-column:1/-1;letter-spacing:0.2em;">FLOTTE EN COURS DE CONSTITUTION</div>';
-      return;
-    }
-    g.innerHTML=v.map(x=>{
-      const img=x.image?`<div class="car-visual"><img src="${x.image}" alt="${x.model||''}" loading="lazy"></div>`:`<div class="car-no-img">🚗</div>`;
-      const dispo=!x.status||x.status==='available';
-      return `<div class="car-card">
-        <div class="car-category">// ${x.brand||'Renault'} — ${x.color||'Premium'}</div>
-        ${img}
-        <div class="car-name">${x.model||'Clio 5 Alpine'}</div>
-        <div class="car-brand">${x.brand||'Renault'} · ${x.year||2024}</div>
-        <div class="car-specs">
-          ${x.power?`<span class="spec">⚡ <strong>${x.power}</strong></span>`:''}
-          ${x.transmission?`<span class="spec">🛞 <strong>${x.transmission}</strong></span>`:''}
-          ${x.seats?`<span class="spec">👥 <strong>${x.seats}p</strong></span>`:''}
-        </div>
-        <div class="car-price">
-          <div><span class="price-amount">${x.pricePerDay||79}€</span><span class="price-unit">/jour</span></div>
-          <button class="btn-book" ${dispo?'':`disabled`} onclick="${dispo?`scrollToBook('${x.id}')`:''}">${dispo?'Réserver':'Indispo'}</button>
-        </div>
-      </div>`;
-    }).join('');
-    s.innerHTML='<option value="">Sélectionner...</option>'+avail.map(x=>`<option value="${x.id}">${x.model} — ${x.pricePerDay||79}€/j</option>`).join('');
-  }catch(e){console.error(e);}
-}
-
-function scrollToBook(vehicleId){
-  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
-  setTimeout(()=>{const s=document.getElementById('f-vehicle');if(vehicleId)s.value=vehicleId;},400);
-}
-
-async function submitResa(){
-  const d={
-    prenom:document.getElementById('f-prenom').value.trim(),
-    nom:document.getElementById('f-nom').value.trim(),
-    tel:document.getElementById('f-tel').value.trim(),
-    email:document.getElementById('f-email').value.trim(),
-    vehicleId:document.getElementById('f-vehicle').value,
-    startDate:document.getElementById('f-start').value,
-    endDate:document.getElementById('f-end').value,
-    message:document.getElementById('f-msg').value.trim()
-  };
-  if(!d.prenom||!d.nom||!d.tel||!d.startDate||!d.endDate){showN('Veuillez remplir tous les champs obligatoires.','error');return;}
-  if(d.startDate&&d.endDate&&d.startDate>d.endDate){showN('La date de fin doit être après la date de début.','error');return;}
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true;btn.textContent='Envoi en cours...';
-  try{
-    const r=await fetch('/api/reservations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
-    if(r.ok){
-      showN('✓ Réservation envoyée ! Nous vous contactons sous 30 minutes.','success');
-      ['f-prenom','f-nom','f-tel','f-email','f-msg','f-start','f-end'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('f-vehicle').value='';
-    } else {
-      showN('Erreur lors de l\'envoi. Contactez-nous directement.','error');
-    }
-  }catch(e){showN('Erreur réseau. Vérifiez votre connexion.','error');}
   btn.disabled=false;btn.textContent='Confirmer la Réservation →';
 }
 

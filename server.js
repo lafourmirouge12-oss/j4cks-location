@@ -122,8 +122,22 @@ app.put('/api/config', requireSuperAdmin, (req, res) => {
   res.json({ ok: true, config: cfg });
 });
 
+// ═══ EMAIL (Resend) ═══
+async function sendEmail(to, subject, html) {
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.RESEND_API_KEY}` },
+      body: JSON.stringify({ from: 'J4CK\'S Location <onboarding@resend.dev>', to, subject, html })
+    });
+    const d = await r.json();
+    if (!r.ok) console.error('Resend error:', d);
+    return r.ok;
+  } catch(e) { console.error('Email error:', e.message); return false; }
+}
+
 // ═══ CLIENT ACCOUNTS ═══
-app.post('/api/client/register', (req, res) => {
+app.post('/api/client/register', async (req, res) => {
   const cfg = loadCfg();
   if (!cfg.features.clientAccounts) return res.status(403).json({ error: 'Comptes clients désactivés' });
   const { prenom, nom, email, tel, password } = req.body;
@@ -136,6 +150,26 @@ app.post('/api/client/register', (req, res) => {
   saveDB(db);
   req.session.clientId = client.id;
   req.session.clientEmail = client.email;
+
+  // Mail de confirmation
+  if (process.env.RESEND_API_KEY) {
+    await sendEmail(email, '✅ Bienvenue chez J4CK\'S Location !', `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#0d0d0d;color:#f0f0f0;padding:2rem;border-top:3px solid #e00020;">
+        <div style="font-size:1.3rem;font-weight:900;letter-spacing:0.1em;margin-bottom:0.3rem;"><span style="color:#e00020;">J4</span>CK'S LOCATION</div>
+        <div style="font-size:0.75rem;color:#777;letter-spacing:0.3em;margin-bottom:2rem;">// CONFIRMATION DE COMPTE</div>
+        <p style="font-size:1rem;color:#ccc;">Bonjour <strong style="color:#fff;">${prenom}</strong>,</p>
+        <p style="margin-top:1rem;color:#aaa;line-height:1.6;">Ton compte J4CK'S Location a bien été créé. Tu peux maintenant réserver nos véhicules directement depuis ton espace personnel.</p>
+        <div style="margin:2rem 0;padding:1.2rem;background:#111;border-left:3px solid #e00020;">
+          <div style="font-size:0.75rem;color:#777;letter-spacing:0.2em;margin-bottom:0.5rem;">TON COMPTE</div>
+          <div style="color:#fff;">${prenom} ${nom}</div>
+          <div style="color:#aaa;font-size:0.9rem;">${email}</div>
+        </div>
+        <a href="https://j4cks-location.onrender.com/client" style="display:inline-block;background:#e00020;color:#fff;text-decoration:none;padding:0.8rem 2rem;font-weight:700;letter-spacing:0.1em;font-size:0.85rem;">→ ACCÉDER À MON ESPACE</a>
+        <p style="margin-top:2rem;font-size:0.75rem;color:#555;">J4CK'S Location · Mulhouse, France</p>
+      </div>
+    `);
+  }
+
   res.json({ ok: true, client: { id: client.id, prenom, nom, email } });
 });
 
