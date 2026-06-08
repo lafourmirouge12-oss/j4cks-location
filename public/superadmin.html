@@ -158,7 +158,8 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="nav-item active" onclick="goPage('dashboard',this)"><span>📊</span> Vue Globale</div>
     <div class="nav-item" onclick="goPage('reservations',this)"><span>📅</span> Toutes Réservations</div>
     <div class="nav-item" onclick="goPage('vehicles',this)"><span>🚗</span> Flotte Complète</div>
-    <div class="nav-item" onclick="goPage('contracts',this)"><span>📄</span> Tous les Contrats</div>
+    <div class="nav-item" onclick="goPage('contracts',this)"><span>📄</span> Contrats</div>
+    <div class="nav-item" onclick="goPage('contractgen',this)"><span>✍️</span> Générateur Contrats</div>
     <div class="nav-section">Administration</div>
     <div class="nav-item" onclick="goPage('accounts',this)"><span>👥</span> Comptes Clients</div>
     <div class="nav-item" onclick="goPage('config',this)"><span>⚙️</span> Features & Config</div>
@@ -293,43 +294,55 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     </div>
   </div>
 
-  <!-- CONFIG -->
-  <div class="page" id="page-config">
+
+  <!-- GÉNÉRATEUR CONTRATS -->
+  <div class="page" id="page-contractgen">
     <div class="page-header">
-      <div><div class="page-tag">// ADMINISTRATION</div><div class="page-title">Configuration</div></div>
+      <div><div class="page-tag">// SUPER ADMIN</div><div class="page-title">Générateur de Contrats IA</div></div>
     </div>
-    <div class="config-warn">⚠️ Zone réservée au Super Administrateur. Toute modification est immédiate.</div>
-    <div class="grid-2">
-      <div>
-        <div class="config-card">
-          <div class="config-title">🔑 Changer mot de passe Admin</div>
-          <div class="f-group"><label class="f-label">Nouveau mot de passe admin</label><input type="password" class="f-input" id="new-admin-pwd" placeholder="Nouveau mdp admin"></div>
-          <button class="btn btn-orange" onclick="changePassword('admin')">Mettre à jour</button>
-        </div>
-        <div class="config-card">
-          <div class="config-title">👑 Changer mot de passe Super Admin</div>
-          <div class="f-group"><label class="f-label">Nouveau mot de passe super admin</label><input type="password" class="f-input" id="new-super-pwd" placeholder="Nouveau mdp super admin"></div>
-          <button class="btn btn-orange" onclick="changePassword('superadmin')">Mettre à jour</button>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.8rem;margin-bottom:1.5rem;">
+      <div style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;" onclick="openContractForm('location')" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),transparent);"></div>
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">📋</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">Contrat de Location</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Contrat complet avec conditions et caution.</div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;" onclick="openContractForm('caution')" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),transparent);"></div>
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">💰</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">Document de Caution</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Dépôt de garantie légal.</div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;" onclick="openContractForm('etatLieux')" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),transparent);"></div>
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">🔍</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">État des Lieux</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Formulaire détaillé du véhicule.</div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;" onclick="openContractForm('facture')" onmouseover="this.style.borderColor='rgba(255,140,0,0.5)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),transparent);"></div>
+        <div style="font-size:1.6rem;margin-bottom:0.6rem;">🧾</div>
+        <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.3rem;">Facture</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Facture professionnelle avec TVA.</div>
+      </div>
+    </div>
+    <div id="sa-contract-form" style="display:none;background:var(--panel);border:1px solid var(--border);padding:1.2rem;margin-bottom:1.2rem;">
+      <div style="font-family:'Orbitron',monospace;font-size:0.72rem;color:#fff;margin-bottom:1rem;" id="sa-cform-title">// GÉNÉRER</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;" id="sa-cform-fields"></div>
+      <div style="margin-top:1rem;display:flex;gap:0.8rem;">
+        <button class="btn btn-orange" onclick="saGenerateContract()">Générer avec l'IA →</button>
+        <button class="btn btn-outline" onclick="document.getElementById('sa-contract-form').style.display='none'">Annuler</button>
+      </div>
+    </div>
+    <div id="sa-contract-output-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem;">
+        <div style="font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.28em;color:var(--orange);">// CONTRAT GÉNÉRÉ</div>
+        <div style="display:flex;gap:0.6rem;">
+          <button class="btn btn-outline btn-sm" onclick="copyText('sa-contract-output')">Copier</button>
+          <button class="btn btn-green btn-sm" onclick="printEl('sa-contract-output')">Imprimer</button>
         </div>
       </div>
-      <div>
-        <div class="config-card">
-          <div class="config-title">🏢 Informations Agence</div>
-          <div class="f-group"><label class="f-label">Nom agence</label><input class="f-input" id="cfg-name" value="J4CK'S Location"></div>
-          <div class="f-group"><label class="f-label">Téléphone</label><input class="f-input" id="cfg-tel" placeholder="+33 6 00 00 00 00"></div>
-          <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="cfg-email" placeholder="contact@j4cks.fr"></div>
-          <div class="f-group"><label class="f-label">Ville</label><input class="f-input" id="cfg-city" value="Mulhouse, France"></div>
-          <button class="btn btn-orange" onclick="saveConfig()">Sauvegarder</button>
-        </div>
-        <div class="danger-zone">
-          <div class="danger-title">// ZONE DANGEREUSE</div>
-          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">Ces actions sont irréversibles.</div>
-          <div style="display:flex;flex-direction:column;gap:0.6rem;">
-            <button class="btn btn-red" onclick="confirmAction('Supprimer TOUTES les réservations ?',resetReservations)">🗑 Réinitialiser réservations</button>
-            <button class="btn btn-red" onclick="confirmAction('Supprimer TOUS les contrats ?',resetContracts)">🗑 Réinitialiser contrats</button>
-          </div>
-        </div>
-      </div>
+      <div id="sa-contract-output" style="background:var(--black2);border:1px solid var(--border);padding:1.5rem;font-family:'Rajdhani',sans-serif;font-size:0.88rem;line-height:1.7;white-space:pre-wrap;max-height:500px;overflow-y:auto;"></div>
     </div>
   </div>
 
@@ -508,7 +521,7 @@ function goPage(p,el){
   document.getElementById('page-'+p).classList.add('active');
   if(el)el.classList.add('active');
   closeSidebar();
-  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:()=>{loadVehicles();renderVehList();},contracts:loadContracts,export:loadExport,accounts:loadAccounts,config:loadFeatures};
+  const map={dashboard:loadDashboard,reservations:loadReservations,vehicles:()=>{loadVehicles();renderVehList();},contracts:loadContracts,contractgen:()=>{},export:loadExport,accounts:loadAccounts,config:loadFeatures,ai:()=>{}};
   if(map[p])map[p]();
 }
 
@@ -759,6 +772,40 @@ function copyText(id){navigator.clipboard.writeText(document.getElementById(id).
 function printEl(id){const w=window.open('','_blank');w.document.write('<pre style="font-family:Arial;font-size:12px;padding:2rem;white-space:pre-wrap;">'+document.getElementById(id).textContent+'</pre>');w.print();}
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',4000);}
 
+// GÉNÉRATEUR CONTRATS SUPERADMIN
+let saContractType=null;
+const saContractForms={
+  location:[{id:'cl-nom',label:'Nom client',ph:'Martin Thomas'},{id:'cl-addr',label:'Adresse client',ph:'12 rue de la Paix, Mulhouse'},{id:'cl-permis',label:'N° permis',ph:'123456789'},{id:'cl-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'cl-immat',label:'Immatriculation',ph:'XX-000-XX'},{id:'cl-debut',label:'Date début',ph:'2026-06-01'},{id:'cl-fin',label:'Date fin',ph:'2026-06-05'},{id:'cl-prix',label:'Prix total (€)',ph:'395'},{id:'cl-caution',label:'Caution (€)',ph:'800'}],
+  caution:[{id:'ca-nom',label:'Nom client',ph:'Martin Thomas'},{id:'ca-montant',label:'Montant (€)',ph:'800'},{id:'ca-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'ca-date',label:'Date',ph:'2026-06-01'}],
+  etatLieux:[{id:'el-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'el-immat',label:'Immat.',ph:'XX-000-XX'},{id:'el-km',label:'Kilométrage',ph:'5000'},{id:'el-client',label:'Nom client',ph:'Martin Thomas'},{id:'el-date',label:'Date',ph:'2026-06-01'}],
+  facture:[{id:'fa-nom',label:'Nom client',ph:'Martin Thomas'},{id:'fa-addr',label:'Adresse',ph:'12 rue de la Paix, Mulhouse'},{id:'fa-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'fa-debut',label:'Date début',ph:'2026-06-01'},{id:'fa-fin',label:'Date fin',ph:'2026-06-05'},{id:'fa-prix',label:'Prix HT (€)',ph:'329'},{id:'fa-tva',label:'TVA (%)',ph:'20'}]
+};
+const saContractTitles={location:'Contrat de Location',caution:'Document de Caution',etatLieux:'État des Lieux',facture:'Facture'};
+
+function openContractForm(type){
+  saContractType=type;
+  document.getElementById('sa-cform-title').textContent='// GÉNÉRER : '+(saContractTitles[type]||'').toUpperCase();
+  const fields=saContractForms[type]||[];
+  document.getElementById('sa-cform-fields').innerHTML=fields.map(f=>`<div class="f-group"><label class="f-label">${f.label}</label><input class="f-input" id="${f.id}" placeholder="${f.ph}"></div>`).join('');
+  document.getElementById('sa-contract-form').style.display='block';
+  document.getElementById('sa-contract-output-wrap').style.display='none';
+}
+
+async function saGenerateContract(){
+  const fields=saContractForms[saContractType]||[];
+  const data={agence:"J4CK'S Location, Mulhouse, France"};
+  fields.forEach(f=>{data[f.label]=document.getElementById(f.id)?.value||'';});
+  document.getElementById('sa-contract-output-wrap').style.display='block';
+  document.getElementById('sa-contract-output').innerHTML='<span style="color:var(--muted);font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.15em;">Génération en cours...</span>';
+  try{
+    const r=await fetch('/api/generate-contract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:saContractType,data})});
+    const d=await r.json();
+    document.getElementById('sa-contract-output').textContent=d.content||d.error||'Erreur';
+    loadContracts();
+    toast('Contrat généré !','success');
+  }catch(e){document.getElementById('sa-contract-output').textContent='Erreur de connexion.';}
+}
+
 // COMPTES
 async function loadAccounts(){
   try{
@@ -787,16 +834,19 @@ async function loadFeatures(){
   try{
     const r=await(await fetch('/api/config')).json();
     const feats=r.features||{};
-    Object.keys(feats).forEach(k=>{
-      const el=document.getElementById('feat-'+k);
-      if(el)el.checked=feats[k];
+    // Set checkboxes
+    document.querySelectorAll('.feat-toggle').forEach(el=>{
+      const key=el.dataset.key;
+      if(key in feats) el.checked=feats[key];
     });
+    // Set agency fields
     const ag=r.agency||{};
-    Object.keys(ag).forEach(k=>{
-      const el=document.getElementById('cfg-'+k);
-      if(el)el.value=ag[k];
+    const fieldMap={name:'cfg-name',phone:'cfg-phone',email:'cfg-email',address:'cfg-address',instagram:'cfg-instagram',whatsapp:'cfg-whatsapp',minAge:'cfg-minAge',depositAmount:'cfg-depositAmount'};
+    Object.entries(fieldMap).forEach(([k,id])=>{
+      const el=document.getElementById(id);
+      if(el&&ag[k]!==undefined)el.value=ag[k];
     });
-  }catch(e){}
+  }catch(e){console.error('loadFeatures error',e);}
 }
 async function saveFeatures(){
   const feats={};

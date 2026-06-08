@@ -581,16 +581,15 @@ async function saveAndPreview(){
 
 async function publishSite(){
   const btn=document.querySelector('.btn-save-pub');
-  btn.textContent='⏳ Publication...';btn.disabled=true;
-  await saveConfig();
-  // Reload preview to apply saved config
-  const frame=document.getElementById('preview-frame');
-  frame.src='/';
-  frame.onload=()=>{
-    setTimeout(()=>refreshPreview(),500);
-  };
-  btn.textContent='✓ Publié !';
-  setTimeout(()=>{btn.textContent='✓ Publier';btn.disabled=false;},2000);
+  btn.textContent='⏳...';btn.disabled=true;
+  const ok=await saveConfig();
+  if(ok){
+    toast('✓ Publié ! Application en cours...','ok');
+    const frame=document.getElementById('preview-frame');
+    frame.onload=()=>setTimeout(()=>refreshPreview(),600);
+    frame.src='/';
+  }
+  setTimeout(()=>{btn.textContent='✓ Publier';btn.disabled=false;},3000);
 }
 
 async function saveConfig(){
@@ -601,10 +600,10 @@ async function saveConfig(){
     fonts:{title:document.getElementById('font-title').value,body:document.getElementById('font-body').value}
   };
   try{
-    await fetch('/api/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteConfig:cfg})});
+    const r=await fetch('/api/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteConfig:cfg})});
     localStorage.setItem('j4cks-editor-config',JSON.stringify(cfg));
-    toast('Sauvegardé ✓','ok');
-  }catch(e){toast('Erreur sauvegarde','err');}
+    return r.ok;
+  }catch(e){toast('Erreur sauvegarde','err');return false;}
 }
 
 function loadSavedConfig(){

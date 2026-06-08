@@ -433,7 +433,39 @@ function showN(m,t){
 
 loadVehicles();
 
-// ÉDITEUR — reçoit les mises à jour en temps réel
+// Charger config sauvegardée depuis l'API et appliquer
+(async()=>{
+  try{
+    const r=await fetch('/api/config');
+    const cfg=await r.json();
+    if(cfg.siteConfig){
+      const sc=cfg.siteConfig;
+      // CSS
+      if(sc.css){
+        const s=document.createElement('style');
+        s.id='site-config-css';
+        s.textContent=sc.css;
+        document.head.appendChild(s);
+      }
+      // Fonts
+      if(sc.fonts){
+        const link=document.createElement('link');
+        link.rel='stylesheet';
+        link.href=`https://fonts.googleapis.com/css2?family=${[sc.fonts.title,sc.fonts.body].filter(Boolean).map(f=>f.replace(/ /g,'+')+':wght@400;700;900').join('&family=')}&display=swap`;
+        document.head.appendChild(link);
+      }
+      // Content
+      const c=sc.content;
+      if(c){
+        const s=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.textContent=val;};
+        if(c.hero){s('hero-t1',c.hero.title1);s('hero-t2',c.hero.title2);s('hero-badge-text',c.hero.badge);s('hero-sub-text',c.hero.sub);s('hero-btn1-text',c.hero.btn1);s('hero-btn2-text',c.hero.btn2);}
+        if(c.stats){s('stat-s2-val',c.stats.s2val);s('stat-s4-val',c.stats.s4val);s('stat-s1-label',c.stats.s1label);s('stat-s2-label',c.stats.s2label);}
+        if(c.services)c.services.forEach((sv,i)=>{s(`srv-icon-${i}`,sv.icon);s(`srv-name-${i}`,sv.name);s(`srv-desc-${i}`,sv.desc);});
+        if(c.srvTitle)s('srv-section-title',c.srvTitle);
+      }
+    }
+  }catch(e){}
+})();
 window.addEventListener('message', e => {
   if (!e.data || e.data.type !== 'EDITOR_UPDATE') return;
   const {css, content, fonts} = e.data;
