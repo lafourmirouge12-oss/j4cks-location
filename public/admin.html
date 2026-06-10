@@ -550,10 +550,49 @@ async function deleteContract(id){
 }
 
 const contractForms={
-  location:[{id:'cl-nom',label:'Nom client',ph:'Martin Thomas'},{id:'cl-addr',label:'Adresse client',ph:'12 rue de la Paix, Mulhouse'},{id:'cl-permis',label:'N° permis',ph:'123456789'},{id:'cl-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'cl-immat',label:'Immatriculation',ph:'XX-000-XX'},{id:'cl-debut',label:'Date début',ph:'2026-06-01'},{id:'cl-fin',label:'Date fin',ph:'2026-06-03'},{id:'cl-prix',label:'Prix total (€)',ph:'180'},{id:'cl-caution',label:'Caution (€)',ph:'800'}],
-  caution:[{id:'ca-nom',label:'Nom client',ph:'Martin Thomas'},{id:'ca-montant',label:'Montant caution (€)',ph:'800'},{id:'ca-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'ca-date',label:'Date',ph:'2026-06-01'}],
-  etatLieux:[{id:'el-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'el-immat',label:'Immatriculation',ph:'XX-000-XX'},{id:'el-km',label:'Kilométrage',ph:'5000'},{id:'el-client',label:'Nom client',ph:'Martin Thomas'},{id:'el-date',label:'Date',ph:'2026-06-01'}],
-  facture:[{id:'fa-nom',label:'Nom client',ph:'Martin Thomas'},{id:'fa-addr',label:'Adresse',ph:'12 rue de la Paix, Mulhouse'},{id:'fa-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},{id:'fa-debut',label:'Date début',ph:'2026-06-01'},{id:'fa-fin',label:'Date fin',ph:'2026-06-03'},{id:'fa-prix',label:'Prix HT (€)',ph:'150'},{id:'fa-tva',label:'TVA (%)',ph:'20'}]
+  location:[
+    {id:'cl-nom',label:'Nom complet client',ph:'Martin Thomas'},
+    {id:'cl-addr',label:'Adresse client',ph:'12 rue de la Paix, Mulhouse'},
+    {id:'cl-permis',label:'N° permis de conduire',ph:'123456789'},
+    {id:'cl-tel',label:'Téléphone',ph:'+33 6 00 00 00 00'},
+    {id:'cl-email',label:'Email',ph:'client@email.com'},
+    {id:'cl-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},
+    {id:'cl-immat',label:'Immatriculation',ph:'XX-000-XX'},
+    {id:'cl-couleur',label:'Couleur',ph:'Noir Étoilé'},
+    {id:'cl-debut',label:'Date début',ph:'2026-06-01'},
+    {id:'cl-fin',label:'Date fin',ph:'2026-06-03'},
+    {id:'cl-jours',label:'Nombre de jours',ph:'2'},
+    {id:'cl-prixjour',label:'Prix/jour (€)',ph:'79'},
+    {id:'cl-prix',label:'Prix total (€)',ph:'158'},
+    {id:'cl-options',label:'Options souscrites',ph:'Livraison, GPS...'},
+    {id:'cl-caution',label:'Caution (€)',ph:'800'},
+  ],
+  caution:[
+    {id:'ca-client',label:'Nom client',ph:'Martin Thomas'},
+    {id:'ca-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},
+    {id:'ca-immat',label:'Immatriculation',ph:'XX-000-XX'},
+    {id:'ca-caution',label:'Montant caution (€)',ph:'800'},
+    {id:'ca-date',label:'Date dépôt',ph:'2026-06-01'},
+  ],
+  etatLieux:[
+    {id:'el-client',label:'Nom client',ph:'Martin Thomas'},
+    {id:'el-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},
+    {id:'el-immat',label:'Immatriculation',ph:'XX-000-XX'},
+    {id:'el-km',label:'Kilométrage',ph:'5000'},
+    {id:'el-date',label:'Date',ph:'2026-06-01'},
+  ],
+  facture:[
+    {id:'fa-client',label:'Nom client',ph:'Martin Thomas'},
+    {id:'fa-addr',label:'Adresse client',ph:'12 rue de la Paix, Mulhouse'},
+    {id:'fa-vehicule',label:'Véhicule',ph:'Clio 5 Alpine'},
+    {id:'fa-debut',label:'Date début',ph:'2026-06-01'},
+    {id:'fa-fin',label:'Date fin',ph:'2026-06-03'},
+    {id:'fa-jours',label:'Nombre de jours',ph:'2'},
+    {id:'fa-prix',label:'Prix HT location (€)',ph:'132'},
+    {id:'fa-extras',label:'Options HT (€)',ph:'0'},
+    {id:'fa-options',label:'Détail options',ph:'GPS, Livraison...'},
+    {id:'fa-tva',label:'TVA (%)',ph:'20'},
+  ]
 };
 
 function openContractForm(type){
@@ -569,18 +608,59 @@ function openContractForm(type){
 async function generateContract(){
   const fields=contractForms[currentContractType]||[];
   const data={};
-  fields.forEach(f=>{data[f.label]=document.getElementById(f.id)?.value||'';});
-  data.agence="J4CK'S Location, Mulhouse, France";
+  fields.forEach(f=>{data[f.id.replace(/^[a-z]+-/,'')]=document.getElementById(f.id)?.value||'';});
+
+  // Map field values properly
+  const mapped={
+    nom_client: data.nom || data.client || '',
+    adresse_client: data.addr || data.adresse || '',
+    permis: data.permis || '',
+    vehicule: data.vehicule || '',
+    immatriculation: data.immat || '',
+    couleur: data.couleur || '',
+    date_debut: data.debut || '',
+    date_fin: data.fin || '',
+    nb_jours: data.jours || '',
+    prix_jour: data.prixjour || '',
+    prix_ht: data.prix || '',
+    extras_ht: data.extras || '0',
+    prix_total: data.prix || '',
+    caution: data.caution || '800',
+    options: data.options || '',
+    tva: data.tva || '20',
+    date_depot: data.date || '',
+    kilometrage: data.km || '',
+    telephone: data.tel || '',
+    email: data.email || '',
+  };
+
   document.getElementById('contract-output-wrap').style.display='block';
-  document.getElementById('contract-output').innerHTML='<div class="generating">// Génération en cours <span class="dot-anim"><span>.</span><span>.</span><span>.</span></span></div>';
+  document.getElementById('contract-output').innerHTML='<span style="color:var(--muted);font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.15em;">⏳ Génération du PDF en cours...</span>';
+
   try{
-    const r=await fetch('/api/generate-contract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:currentContractType,data})});
-    const d=await r.json();
-    document.getElementById('contract-output').textContent=d.content||d.error||'Erreur';
-    loadContracts();toast('Contrat généré !','success');
+    const r=await fetch('/api/generate-pdf',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({type:currentContractType, data:mapped})
+    });
+    if(!r.ok){
+      const e=await r.json();
+      document.getElementById('contract-output').innerHTML=`<span style="color:var(--red)">Erreur: ${e.error}</span>`;
+      return;
+    }
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`J4CKS-${currentContractType}-${Date.now()}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    document.getElementById('contract-output').innerHTML='<span style="color:#00c850;font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.15em;">✓ PDF téléchargé avec succès !</span>';
+    toast('PDF généré et téléchargé ✓','success');
+    loadContracts();
   }catch(e){
-    document.getElementById('contract-output').textContent='Erreur de connexion.';
-    toast('Erreur lors de la génération','error');
+    document.getElementById('contract-output').innerHTML='<span style="color:var(--red)">Erreur de connexion.</span>';
+    toast('Erreur génération PDF','error');
   }
 }
 

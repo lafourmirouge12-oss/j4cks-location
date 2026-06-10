@@ -218,7 +218,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Client</th><th>Email</th><th>Tél</th><th>Véhicule</th><th>Début</th><th>Fin</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
+        <thead><tr><th colspan="2">Réservations</th></tr></thead>
         <tbody id="r-list"></tbody>
       </table>
     </div>
@@ -550,12 +550,54 @@ async function loadDashboard(){
 
 async function loadReservations(filter='all'){
   try{
-    allResas=await(await fetch('/api/reservations')).json();
-    const filtered=filter==='all'?allResas:allResas.filter(r=>r.status===filter);
-    document.getElementById('r-list').innerHTML=filtered.length
-      ?filtered.map(r=>`<tr><td><strong>${r.prenom||''} ${r.nom||''}</strong></td><td style="font-size:0.78rem">${r.email||'—'}</td><td>${r.tel||'—'}</td><td>${r.vehicleId||'—'}</td><td>${r.startDate||'—'}</td><td>${r.endDate||'—'}</td><td>${r.totalPrice?r.totalPrice+'€':'—'}</td><td><span class="badge ${r.status}">${r.status}</span></td><td style="white-space:nowrap"><button class="btn btn-green btn-sm" onclick="changeStatus('${r.id}','confirmed')">✓</button> <button class="btn btn-red btn-sm" onclick="changeStatus('${r.id}','cancelled')">✗</button></td></tr>`).join('')
-      :'<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">Aucune réservation</td></tr>';
-  }catch(e){}
+    const [resas, vehs] = await Promise.all([
+      fetch('/api/reservations').then(r=>r.json()),
+      fetch('/api/vehicles').then(r=>r.json())
+    ]);
+    allResas=resas;
+    const filtered=filter==='all'?resas:resas.filter(r=>r.status===filter);
+    const list=document.getElementById('r-list');
+    if(!filtered.length){
+      list.innerHTML='<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:2rem;font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.2em;">AUCUNE RÉSERVATION</td></tr>';
+      return;
+    }
+    list.innerHTML=filtered.map(r=>{
+      const veh=vehs.find(v=>v.id===r.vehicleId);
+      const opts=Array.isArray(r.options)&&r.options.length?r.options.join(' · '):null;
+      return `<tr><td colspan="2" style="padding:0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div style="display:grid;grid-template-columns:180px 1fr;background:var(--black2);">
+          <div style="position:relative;overflow:hidden;background:#111;min-height:140px;display:flex;align-items:center;justify-content:center;">
+            ${veh?.image
+              ?`<img src="${veh.image}" style="width:100%;height:140px;object-fit:cover;" alt="" onerror="this.parentElement.innerHTML='<span style=font-size:2.5rem;opacity:0.2>🚗</span>'">`
+              :`<span style="font-size:2.5rem;opacity:0.2;">🚗</span>`}
+            <span class="badge ${r.status}" style="position:absolute;top:0.5rem;left:0.5rem;">${r.status==='pending'?'En attente':r.status==='confirmed'?'Confirmée':'Annulée'}</span>
+          </div>
+          <div style="padding:1rem 1.2rem;display:flex;flex-direction:column;gap:0.4rem;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.4rem;">
+              <div>
+                <div style="font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;color:#fff;">${r.prenom||''} ${r.nom||''}</div>
+                <div style="font-size:0.78rem;color:var(--muted);">${r.email||''} ${r.tel?'· '+r.tel:''}</div>
+              </div>
+              <div style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--red);">${r.totalPrice?r.totalPrice+'€':''}</div>
+            </div>
+            <div style="font-family:'Orbitron',monospace;font-size:0.78rem;color:#fff;margin-top:0.2rem;">
+              ${veh?`${veh.brand||''} ${veh.model||''} <span style="color:var(--muted);font-size:0.7rem;">· ${veh.color||''}</span>`:`<span style="color:var(--muted);">Véhicule: ${r.vehicleId||'—'}</span>`}
+            </div>
+            <div style="font-size:0.82rem;color:var(--muted);">
+              📅 <strong style="color:#ccc;">${r.startDate||'—'}</strong> → <strong style="color:#ccc;">${r.endDate||'—'}</strong>
+              ${r.nbJours?`<span> · ${r.nbJours} jour${r.nbJours>1?'s':''}</span>`:''}
+            </div>
+            ${opts?`<div style="font-size:0.75rem;color:#888;">⚙️ ${opts}</div>`:''}
+            ${r.message?`<div style="font-size:0.75rem;color:#888;font-style:italic;">💬 "${r.message}"</div>`:''}
+            <div style="display:flex;gap:0.5rem;margin-top:0.4rem;flex-wrap:wrap;">
+              <button class="btn btn-green btn-sm" onclick="changeStatus('${r.id}','confirmed')">✓ Confirmer</button>
+              <button class="btn btn-red btn-sm" onclick="changeStatus('${r.id}','cancelled')">✗ Annuler</button>
+            </div>
+          </div>
+        </div>
+      </td></tr>`;
+    }).join('');
+  }catch(e){console.error(e);}
 }
 function filterResas(f){loadReservations(f);}
 
@@ -793,17 +835,54 @@ function openContractForm(type){
 
 async function saGenerateContract(){
   const fields=saContractForms[saContractType]||[];
-  const data={agence:"J4CK'S Location, Mulhouse, France"};
-  fields.forEach(f=>{data[f.label]=document.getElementById(f.id)?.value||'';});
+  const rawData={};
+  fields.forEach(f=>{rawData[f.id.replace(/^[a-z]+-/,'')]=document.getElementById(f.id)?.value||'';});
+
+  const mapped={
+    nom_client: rawData.nom || rawData.client || '',
+    adresse_client: rawData.addr || rawData.adresse || '',
+    permis: rawData.permis || '',
+    vehicule: rawData.vehicule || '',
+    immatriculation: rawData.immat || '',
+    date_debut: rawData.debut || '',
+    date_fin: rawData.fin || '',
+    nb_jours: rawData.jours || '',
+    prix_jour: rawData.prixjour || '',
+    prix_ht: rawData.prix || '',
+    extras_ht: rawData.extras || '0',
+    prix_total: rawData.prix || '',
+    caution: rawData.caution || rawData.montant || '800',
+    options: rawData.options || '',
+    tva: rawData.tva || '20',
+    date_depot: rawData.date || '',
+    kilometrage: rawData.km || '',
+  };
+
   document.getElementById('sa-contract-output-wrap').style.display='block';
-  document.getElementById('sa-contract-output').innerHTML='<span style="color:var(--muted);font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.15em;">Génération en cours...</span>';
+  document.getElementById('sa-contract-output').innerHTML='<span style="color:var(--muted);font-family:\'Orbitron\',monospace;font-size:0.65rem;letter-spacing:0.15em;">⏳ Génération du PDF...</span>';
+
   try{
-    const r=await fetch('/api/generate-contract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:saContractType,data})});
-    const d=await r.json();
-    document.getElementById('sa-contract-output').textContent=d.content||d.error||'Erreur';
-    loadContracts();
-    toast('Contrat généré !','success');
-  }catch(e){document.getElementById('sa-contract-output').textContent='Erreur de connexion.';}
+    const r=await fetch('/api/generate-pdf',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({type:saContractType, data:mapped})
+    });
+    if(!r.ok){
+      document.getElementById('sa-contract-output').innerHTML='<span style="color:var(--red)">Erreur génération</span>';
+      return;
+    }
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`J4CKS-${saContractType}-${Date.now()}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    document.getElementById('sa-contract-output').innerHTML='<span style="color:#00c850;font-family:\'Orbitron\',monospace;font-size:0.65rem;">✓ PDF téléchargé !</span>';
+    toast('PDF généré ✓','success');
+  }catch(e){
+    document.getElementById('sa-contract-output').innerHTML='<span style="color:var(--red)">Erreur connexion</span>';
+  }
 }
 
 // COMPTES

@@ -358,6 +358,26 @@ app.get('/api/export', requireSuperAdmin, (req, res) => {
   res.json({ db, config: cfg, exportDate: new Date().toISOString() });
 });
 
+// ═══ GÉNÉRATION PDF ═══
+app.post('/api/generate-pdf', requireAdmin, async (req, res) => {
+  const { type, data } = req.body;
+  const { spawn } = require('child_process');
+  const scriptPath = path.join(__dirname, 'generate_pdf.py');
+  const titles = { location:'Contrat-Location', caution:'Depot-Garantie', etatLieux:'Etat-des-Lieux', facture:'Facture' };
+  const chunks = [];
+  const py = spawn('python3', [scriptPath, type, JSON.stringify(data)]);
+  py.stdout.on('data', chunk => chunks.push(chunk));
+  py.stderr.on('data', err => console.error('PDF err:', err.toString()));
+  py.on('close', code => {
+    if (code !== 0) return res.status(500).json({ error: 'Erreur génération PDF' });
+    const pdf = Buffer.concat(chunks);
+    const filename = `J4CKS-${titles[type]||'Document'}-${Date.now()}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(pdf);
+  });
+});
+
 // ═══ PAGES ═══
 app.get('/editor*', (req, res) => {
   if (!req.session.role) return res.redirect('/admin');
